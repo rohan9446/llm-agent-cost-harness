@@ -266,6 +266,10 @@ def main() -> int:
                          "still as good, and that comparison belongs in the "
                          "validity checks rather than in someone's judgement "
                          "after the fact.")
+    ap.add_argument("--allow-cold-workers", action="store_true",
+                    help="proceed when a mandatory worker warm-up failed. "
+                         "Recorded in the manifest and failed by "
+                         "every_worker_warmed; for debugging only.")
     ap.add_argument("--stage-freeform", action="store_true",
                     help="permit a --stage name that is not in STAGES; the "
                          "manifest records that the stage enforced nothing")
@@ -384,6 +388,10 @@ def main() -> int:
         llm_max_attempts=llm.max_attempts_setting(),
         generation=llm.effective_generation_config(),
         advisor_reference=a.advisor_reference or "",
+        # Recorded rather than read from os.environ when the check runs, so a
+        # recheck from a different shell judges the run and not the terminal.
+        advisor_template_fallback_allowed=(
+            os.environ.get("ADVISOR_ALLOW_TEMPLATE") == "1"),
         server_probe=facts.as_dict(),
         telemetry_devices=telemetry_devices or "",
         n_workers=_pool_size(a),
@@ -465,6 +473,19 @@ def main() -> int:
             # rest would still be cold when measurement starts.
             barrier = threading.Barrier(n_workers, timeout=180)
 
+            # Warm-up outcomes are RECORDED, and a failed mandatory warm-up
+            # aborts the run.
+            #
+            # These failures used to be printed and dropped, and llm.COUNTER
+            # was reset immediately afterwards -- so a worker whose warm-up
+            # died was cold, its failure erased from the counters, and the
+            # manifest still claimed the whole pool was warm because the number
+            # it recorded was how many warm-ups had been SUBMITTED. Every
+            # protection the warm-up protocol describes was voided silently.
+            warm_ok: set[int] = set()
+            warm_err: list[str] = []
+            warm_lock = threading.Lock()
+
             def warm(i: int) -> None:
                 if i < n_workers:
                     try:
@@ -479,11 +500,36 @@ def main() -> int:
                     with trace.query(f"warmup-{i}", run_id_value=run_id,
                                      warmup=True, worker_warm=i < n_workers):
                         pipe.run(q["query"])
+                    with warm_lock:
+                        warm_ok.add(i)
                 except Exception as exc:  # noqa: BLE001
+                    with warm_lock:
+                        warm_err.append(f"warm-up {i}: {type(exc).__name__}: {exc}")
                     print(f"  warm-up {i} failed: {exc}", flush=True)
 
             for f in [pool.submit(warm, i) for i in range(warm_n)]:
                 f.result()
+
+            # The first n_workers tasks are the ones bound to distinct threads
+            # by the barrier, so those are the mandatory ones.
+            cold = [i for i in range(n_workers) if i not in warm_ok]
+            manifest.warmup_attempted = warm_n
+            manifest.warmup_failed = len(warm_err)
+            manifest.warmed_workers = n_workers - len(cold)
+            if cold and not a.allow_cold_workers:
+                pool.shutdown(wait=True)
+                print(f"\n{len(cold)} of {n_workers} worker warm-ups failed "
+                      f"(workers {cold}).\n"
+                      + "\n".join(f"  {e}" for e in warm_err[:5])
+                      + f"\n\nMeasuring through a cold worker puts client "
+                      f"construction, TCP setup and the first-token penalty "
+                      f"inside a MEASURED request. That is the cost the warm-up "
+                      f"protocol exists to exclude, so this is a failed run "
+                      f"rather than a slow one.\nPass --allow-cold-workers to "
+                      f"override; the manifest records that you did.",
+                      file=sys.stderr)
+                return 2
+
             llm.COUNTER.reset()
             # The cascade's tier counters must cover the same window as the
             # LLM counters, or coverage is reported over warm-up plus
@@ -610,6 +656,11 @@ def main() -> int:
               f"{100*(aq['grounded_fraction_mean'] or 0):.1f}%")
 
     aref = _read_advisor_reference(a.advisor_reference)
+    if aref:
+        manifest.advisor_reference_run_id = str(
+            (aref.get("manifest") or {}).get("run_id") or "")
+        manifest.advisor_reference_sha256 = aref.get("advisor_eval_sha256", "")
+        manifest.to_json(os.path.join(out_dir, "manifest.json"))
     if a.advisor_reference and aref is None:
         print(f"advisor reference {a.advisor_reference} has no readable "
               f"advisor_eval.json", file=sys.stderr)
@@ -644,14 +695,34 @@ def _read_trace(out_dir: str) -> list[dict]:
 
 
 def _read_advisor_reference(path: str | None) -> dict | None:
-    """The reference arm's advisor_eval.json, if one was declared."""
+    """The reference arm's scores AND its manifest.
+
+    Loading only advisor_eval.json was enough to compare the numbers and not
+    enough to know what produced them. A non-inferiority verdict against a
+    reference that ran a different corpus, model or snapshot is arithmetic, not
+    evidence -- and it reads exactly as confidently as the real thing. The
+    manifest comes along so validity.check_run can bind the two arms to the
+    same experiment.
+    """
     if not path:
         return None
-    p = path if path.endswith(".json") else os.path.join(path, "advisor_eval.json")
-    if not os.path.exists(p):
+    base = os.path.dirname(path) if path.endswith(".json") else path
+    adv_path = path if path.endswith(".json") else os.path.join(base, "advisor_eval.json")
+    if not os.path.exists(adv_path):
         return None
-    with open(p, encoding="utf-8") as fh:
-        return json.load(fh)
+    with open(adv_path, "rb") as fh:
+        raw = fh.read()
+    bundle: dict = {
+        "path": path,
+        "advisor": json.loads(raw.decode("utf-8")),
+        "advisor_eval_sha256": hashlib.sha256(raw).hexdigest(),
+        "manifest": None,
+    }
+    mpath = os.path.join(base, "manifest.json")
+    if os.path.exists(mpath):
+        with open(mpath, encoding="utf-8") as fh:
+            bundle["manifest"] = json.load(fh)
+    return bundle
 
 
 def _name_table_sha(a) -> str:

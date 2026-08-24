@@ -1120,7 +1120,7 @@
       "ticker_set_ok": true,
       "weights_ok": false,
       "weight_max_abs_error": 0.16666666666666666,
-      "weight_l1_error": 0.33333333333333337,
+      "weight_l1_error": 0.3333333333333334,
       "weights_expected": {
         "CSCO": 0.16666666666666666,
         "CRM": 0.16666666666666666,
@@ -1166,7 +1166,7 @@
       "ticker_set_ok": true,
       "weights_ok": false,
       "weight_max_abs_error": 0.16666666666666666,
-      "weight_l1_error": 0.33333333333333337,
+      "weight_l1_error": 0.3333333333333334,
       "weights_expected": {
         "GOOGL": 0.16666666666666666,
         "KO": 0.16666666666666666,
@@ -1848,7 +1848,7 @@
       "ticker_set_ok": false,
       "weights_ok": false,
       "weight_max_abs_error": 0.314527736131934,
-      "weight_l1_error": 0.6890554722638679,
+      "weight_l1_error": 0.6890554722638678,
       "weights_expected": {
         "COST": 0.05,
         "GOOGL": 0.03,
@@ -2006,7 +2006,7 @@
       "ticker_set_ok": false,
       "weights_ok": false,
       "weight_max_abs_error": 0.16666666666666669,
-      "weight_l1_error": 0.33333333333333337,
+      "weight_l1_error": 0.3333333333333335,
       "weights_expected": {
         "JNJ": 0.16666666666666666,
         "ADBE": 0.16666666666666666,
@@ -2090,7 +2090,7 @@
       "ticker_set_ok": false,
       "weights_ok": false,
       "weight_max_abs_error": 0.16666666666666669,
-      "weight_l1_error": 0.3333333333333335,
+      "weight_l1_error": 0.33333333333333337,
       "weights_expected": {
         "TSLA": 0.16666666666666666,
         "CVX": 0.16666666666666666,

@@ -328,6 +328,56 @@ weaker than the claims. They are now enforced in code, and
 | the live-argv check named five flags, claimed "every setting" | full recorded argv compared flag by flag |
 | parser scoring sat in `except: print(...)` | `parser_quality_scored` — the accuracy is reported, its absence is gated |
 | `data/vocab.json` set derived accuracy but was pinned nowhere | `_vocab_sha256` and `_scorer_sha256` in `parser_eval.json` |
+| the A2 reference was a **path**, bound only by scorer version | `advisor_reference_same_experiment` — model, snapshot, query content, workload size |
+| a recheck with no result rows reported `prices_from_snapshot` as **PASS** | checks carry `verifiable`; no evidence is a gap, never a pass |
+| `template_fallback_disabled` read the **auditor's shell** | recorded in the manifest at run time |
+| a failed worker warm-up was printed and swallowed | `every_worker_warmed`; a cold worker fails the run |
+| failed calls never reached the attributor that was written for them | `attribute(llm_rows)`, with an `unattributed_failed_attempt` bucket |
+| calibration compatibility checked 5 fields, claimed "a SYSTEM" | `system_fingerprint` over server config, argv, GPU and versions |
+| a negative token slope was clamped to `1e-12` | fatal; raw coefficients and `fit_problems` travel with the weights |
+
+### The empty set satisfies any universal claim
+
+Two of those deserve more than a table row.
+
+`recheck_runs.py` cannot see `results.jsonl` — it carries supplied query text
+and is not published. To keep the counts right it fabricated placeholder rows
+with empty `metrics`. `check_run` then iterated over zero price reads, found
+zero bad ones, and wrote
+
+```json
+"prices_from_snapshot": { "ok": true, "detail": "all reads from snapshot" }
+```
+
+into every published `validity.recheck.json` — while the same script printed
+*"prices_from_snapshot cannot be re-verified"* to the terminal. Both statements
+came from the same function call. Pass, fail and **cannot tell** are three
+states, and collapsing the third into either of the others produces a lie;
+`Check` now carries `verifiable`, and a check with no evidence gates nothing
+and is never counted as a pass.
+
+`template_fallback_disabled` had the same shape in a different tense. It read
+`os.environ` — correct during a measurement, meaningless during a recheck days
+later, where it reported a fact about the auditor's terminal as a fact about
+the experiment.
+
+### Subtraction does not check its operands
+
+The audit found that the A2 non-inferiority gate bound its two arms together
+only by scorer version — nothing required them to have run the same queries on
+the same model. That is fixed.
+
+The same hole is wider in the headline table, and nothing had flagged it:
+`-28.4%` is a subtraction between two run directories, and **no check anywhere
+asserted that those runs differed only in the parser.** The A2 gate at least
+named a reference. The cost comparison names nothing; three directories sit in
+`results/` and the README subtracts them.
+
+`scripts/compare_runs.py --headline` now asks the question directly, and on the
+archived runs it answers **CANNOT ESTABLISH** — not because the runs differ,
+but because they predate `query_content_sha256` and the binding rests on my
+memory rather than on the artifacts. That is the honest state, and it is what
+the pending re-measurement would close.
 
 The first row there is the one worth reading twice. `Rivian, AAPL and MSFT`
 returned `{AAPL: 0.5, MSFT: 0.5}` — the unrecognised company dropped and the

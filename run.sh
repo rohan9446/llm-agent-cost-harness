@@ -96,6 +96,8 @@ verify)
 
 audit)   ./scripts/pre_commit_audit.sh ;;
 
+compare) "$PY" scripts/compare_runs.py --headline ;;
+
 recheck)
   "$PY" scripts/rescore_parser.py --write
   "$PY" scripts/recheck_runs.py --write \

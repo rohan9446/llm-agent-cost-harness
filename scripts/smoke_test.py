@@ -291,29 +291,111 @@ def main() -> int:
     # ---- A2's quality gates must actually reject --------------------------
     from agentops.validity import RunManifest as _RM, _advisor_gates
     from agentops import advisor_eval as _ae0
+    # The binding fields have to be present on both sides now: a bare
+    # advisor_eval dict can no longer establish that two arms are the same
+    # experiment, which is the point of the checks further down.
+    _EXPFIELDS = dict(model="M", served_model="M", snapshot_id="S",
+                      query_content_sha256="Q" * 64, corpus_sha256="C" * 64,
+                      query_set_id="K" * 64, prefix_caching="off",
+                      server_devices="0")
     _m = _RM(run_id="t", stage="A2-terse", n_queries=1000, concurrency=8,
-             advisor_style="terse", advisor_reference="results/A1")
+             advisor_style="terse", advisor_reference="results/A1",
+             **_EXPFIELDS)
     # Every fixture carries the scorer stamp, because a comparison without one
     # is now refused -- which is the point of the checks further down.
     _ref = {"n": 1000, "truncated_briefings": 0, "truncation_rate": 0.0,
             "all_topics_rate": 0.997, "grounded_fraction_mean": 0.966,
             "_scorer_sha256": _ae0.scorer_sha256()}
     _good = dict(_ref, all_topics_rate=0.993, grounded_fraction_mean=0.964)
+    _refman = dict(_EXPFIELDS, n_queries=1000)
+
+    def _bundle(adv):
+        return {"advisor": adv, "manifest": _refman, "path": "results/A1"}
     _bad = dict(_ref, all_topics_rate=0.766)
     _cut = dict(_ref, truncated_briefings=7, truncation_rate=0.007)
     check("a non-inferior brevity arm passes its gates",
-          all(c.ok for c in _advisor_gates(_m, _good, _ref)))
+          all(c.ok for c in _advisor_gates(_m, _good, _bundle(_ref))))
     check("an arm that drops a required topic is REJECTED",
-          not all(c.ok for c in _advisor_gates(_m, _bad, _ref)),
+          not all(c.ok for c in _advisor_gates(_m, _bad, _bundle(_ref))),
           "A2-terse was 69% cheaper and lost a topic in a quarter of briefings")
     check("an arm whose briefings are cut off is REJECTED",
-          not all(c.ok for c in _advisor_gates(_m, _cut, _ref)))
+          not all(c.ok for c in _advisor_gates(_m, _cut, _bundle(_ref))))
     check("a missing advisor score fails instead of passing quietly",
-          not all(c.ok for c in _advisor_gates(_m, None, _ref)),
+          not all(c.ok for c in _advisor_gates(_m, None, _bundle(_ref))),
           "scoring wrapped in try/except made the worst arm the likeliest "
           "to skip its own check")
     check("a missing reference fails instead of passing quietly",
           not all(c.ok for c in _advisor_gates(_m, _good, None)))
+
+    # ---- same scorer is not the same experiment ---------------------------
+    _sc0 = _ae0.scorer_sha256()
+    _exp = dict(model="M", served_model="M", snapshot_id="S",
+                query_content_sha256="Q" * 64, corpus_sha256="C" * 64,
+                query_set_id="K" * 64, n_queries=1000, prefix_caching="off",
+                server_devices="0")
+    _mb = _RM(run_id="a2", stage="A2-short", n_queries=1000, concurrency=8,
+              advisor_style="short", advisor_reference="results/A1",
+              **{k: v for k, v in _exp.items() if k != "n_queries"})
+    _arm = dict(_ref, all_topics_rate=0.993, grounded_fraction_mean=0.994,
+                _scorer_sha256=_sc0)
+    _refa = dict(_ref, _scorer_sha256=_sc0)
+
+    def _bound(refman):
+        return _advisor_gates(_mb, _arm, {"advisor": _refa, "manifest": refman})
+
+    check("an arm bound to the same experiment passes",
+          all(c.ok for c in _bound(dict(_exp))))
+    for _lbl, _bad_ref in (("a different corpus", dict(_exp, query_content_sha256="Z" * 64)),
+                           ("a different model", dict(_exp, model="OTHER")),
+                           ("a different snapshot", dict(_exp, snapshot_id="OTHER")),
+                           ("a smaller workload", dict(_exp, n_queries=100))):
+        check(f"a reference on {_lbl} is REFUSED",
+              not all(c.ok for c in _bound(_bad_ref)),
+              "same scorer version does not make two populations comparable")
+    check("scores without a manifest cannot establish the binding",
+          not all(c.ok for c in _advisor_gates(_mb, _arm, _refa)),
+          "with the numbers alone there is no way to know what produced them")
+
+    # ---- warm-up outcome is recorded and gated ----------------------------
+    from agentops.validity import check_run as _crv2
+    _cv2 = {"llm_calls": 20, "llm_failures": 0, "requested_models": ["M"],
+            "llm_calls_by_agent": {"AdvisorAgent": 10, "ParserAgent": 10}}
+    _mw = _RM(run_id="w", stage="B0", n_queries=10, concurrency=4,
+              n_workers=4, warmed_workers=4, warmup_attempted=4, warmup_failed=0)
+    _wc = {c.name: c for c in _crv2(_mw, _cv2, None, [])}["every_worker_warmed"]
+    check("a fully warmed pool passes", _wc.ok and _wc.verifiable)
+    _mw.warmup_failed, _mw.warmed_workers = 1, 3
+    _wc2 = {c.name: c for c in _crv2(_mw, _cv2, None, [])}["every_worker_warmed"]
+    check("a cold worker FAILS the run",
+          _wc2.verifiable and not _wc2.ok,
+          "warm-up failures were printed, swallowed, and then erased from the "
+          "counters by COUNTER.reset()")
+    _mw.warmup_attempted = 0
+    _wc3 = {c.name: c for c in _crv2(_mw, _cv2, None, [])}["every_worker_warmed"]
+    check("a run that never recorded warm-up is a GAP", not _wc3.verifiable)
+
+    # ---- attribution: fits that the data contradicts, and failed calls ----
+    from agentops import cost as _cost
+    def _synth(n=40, slope=0.001):
+        return [{"agent": "A", "prompt_tokens": 200 + i * 20,
+                 "completion_tokens": 40 + i * 4,
+                 "ttft_s": 0.05 + slope * (200 + i * 20),
+                 "latency_s": 0.05 + slope * (200 + i * 20) + 0.2
+                              + 0.004 * (39 + i * 4)} for i in range(n)]
+    check("a healthy attribution fit reports no problems",
+          not _cost.fit_token_weights(_synth(), concurrency=1).problems)
+    _degen = _cost.fit_token_weights(_synth(slope=-0.0004), concurrency=1)
+    check("a negative token slope is FATAL, not clamped to 'tokens are free'",
+          bool(_degen.fatal_problems) and _degen.raw_a_prefill < 0,
+          f"clamped {_degen.a_prefill:.0e} hides raw {_degen.raw_a_prefill:.1e}")
+    _w0 = _cost.fit_token_weights(_synth(), concurrency=1)
+    _tot = _cost.AllocatedCost(wall_s=10, n_queries=10, rate=_cost.GpuRate())
+    _sp = _cost.attribute(_synth(10) + [{"agent": "A", "error": "LLMError: x"}],
+                          _w0, _tot)
+    check("a failed call is bucketed, not redistributed",
+          any(s.stage == "unattributed_failed_attempt" for s in _sp),
+          "attribute() had a branch for failed calls that report.py made "
+          "unreachable by passing only ok_llm")
 
     # ---- two arms must be scored by the same ruler ------------------------
     from agentops import advisor_eval as _ae
@@ -334,18 +416,85 @@ def main() -> int:
     _stale = dict(_good, _scorer_sha256="0" * 64)
     _unstamped = {k: v for k, v in _good.items() if k != "_scorer_sha256"}
     check("an arm scored by a DIFFERENT scorer version is refused",
-          not all(c.ok for c in _advisor_gates(_m, _stale, _refs)),
+          not all(c.ok for c in _advisor_gates(_m, _stale, _bundle(_refs))),
           "A2-short rep1 read 23.6% ungrounded and rep2 read 2.8% for the same "
           "prompt, because one was scored before the tokeniser fix")
     check("an unstamped score is refused rather than assumed compatible",
-          not all(c.ok for c in _advisor_gates(_m, _unstamped, _refs)))
-    _mismatched = [c for c in _advisor_gates(_m, _stale, _refs)
+          not all(c.ok for c in _advisor_gates(_m, _unstamped, _bundle(_refs))))
+    _mismatched = [c for c in _advisor_gates(_m, _stale, _bundle(_refs))
                    if c.name in ("advisor_topic_coverage_non_inferior",
                                  "advisor_grounding_non_inferior")]
     check("no verdict is reported across mismatched scorers",
           not _mismatched,
           "reporting a topic or grounding verdict computed from two different "
           "rulers is worse than reporting none")
+
+    # ---- a check with no evidence is a GAP, never a pass -------------------
+    #
+    # recheck_runs used to fabricate result rows with empty `metrics` so the
+    # counts worked out. check_run iterated over zero price reads, found zero
+    # bad ones, and wrote "all reads from snapshot" into published artifacts
+    # for runs where nothing had been re-read. An empty set satisfies any
+    # universal claim.
+    from agentops.validity import RunManifest as _RMv, check_run as _crv
+    _mv = _RMv(run_id="t", stage="B0", n_queries=10, concurrency=1,
+               model="M", snapshot_source="yfinance", snapshot_verified=True,
+               prefix_caching="off", expected_prefix_caching="off",
+               telemetry_devices="0", server_devices="0", query_set_id="k" * 64,
+               advisor_template_fallback_allowed=False,
+               server_probe={"reachable": True, "model_present": True,
+                             "process_matches_record": True})
+    _cv = {"llm_calls": 20, "llm_failures": 0, "requested_models": ["M"],
+           "llm_calls_by_agent": {"AdvisorAgent": 10, "ParserAgent": 10}}
+
+    def _price_check(res):
+        return {c.name: c for c in _crv(_mv, _cv, res, [])}["prices_from_snapshot"]
+
+    _none = _price_check(None)
+    check("no result rows -> price check is a GAP, not a pass",
+          not _none.verifiable and not _none.ok,
+          "an empty set satisfies any universal claim")
+    _empty = _price_check([{"query_id": f"u{i}", "metrics": {}} for i in range(10)])
+    check("rows with zero price reads -> also a GAP",
+          not _empty.verifiable,
+          "nothing to verify is not the same as nothing wrong")
+    _real = _price_check([{"query_id": "q", "metrics": {"AAPL": {"source": "snapshot"}}}])
+    check("real rows still verify normally", _real.verifiable and _real.ok)
+    _bad = _price_check([{"query_id": "q", "metrics": {"AAPL": {"source": "yfinance"}}}])
+    check("a non-snapshot read still FAILS", _bad.verifiable and not _bad.ok)
+
+    # ---- provenance, not the auditor's shell ------------------------------
+    _mv.advisor_template_fallback_allowed = None
+    _t = {c.name: c for c in _crv(_mv, _cv, None, [])}["template_fallback_disabled"]
+    check("unrecorded template fallback is a GAP",
+          not _t.verifiable,
+          "os.environ at check time describes the terminal, not the run")
+    _mv.advisor_template_fallback_allowed = True
+    _t2 = {c.name: c for c in _crv(_mv, _cv, None, [])}["template_fallback_disabled"]
+    check("a run made with the template fallback FAILS, whatever this shell says",
+          _t2.verifiable and not _t2.ok)
+    _mv.advisor_template_fallback_allowed = False
+
+    # ---- two runs are comparable, or the difference means nothing ---------
+    from agentops.validity import comparability as _cmp
+    _b = dict(model="M", served_model="M", snapshot_id="S",
+              query_content_sha256="Q" * 64, corpus_sha256="C" * 64,
+              query_set_id="K" * 64, n_queries=1000, prefix_caching="off",
+              server_devices="0")
+    check("runs differing only in the treatment are comparable",
+          all(c.ok for c in _cmp([("a", _b), ("b", dict(_b))],
+                                 varying=("parser_kind",))))
+    check("a different corpus is NOT comparable",
+          not all(c.ok for c in _cmp(
+              [("a", _b), ("b", dict(_b, query_content_sha256="Z" * 64))])),
+          "subtraction does not care whether the operands are the same "
+          "experiment; this is what the README's -28.4% rests on")
+    _blank = {k: ("" if k != "n_queries" else 0) for k in _b}
+    _gapc = _cmp([("a", _blank), ("b", dict(_blank))])
+    check("absence on BOTH sides is not agreement",
+          all(not c.verifiable for c in _gapc),
+          "two runs that both fail to record the corpus hash are not thereby "
+          "shown to have used the same corpus")
 
     # ---- the argv check must be exhaustive, not a handpicked list ---------
     from agentops.preflight import _argv_agrees as _aa

@@ -5,7 +5,7 @@ C  ?= 8
 STAGE ?= B0
 APC ?= off
 
-.PHONY: help bootstrap smoke snapshot serve calibrate bench report verify audit recheck clean
+.PHONY: help bootstrap smoke snapshot serve calibrate bench report verify audit recheck compare clean
 
 help:
 	@echo "make bootstrap  one-time setup + preflight; run this first on the lab box"
@@ -18,6 +18,7 @@ help:
 	@echo "make verify     confirm the handout patches still apply cleanly"
 	@echo "make audit      what would be committed, and does any of it leak"
 	@echo "make recheck    re-judge archived runs under the current validity rules"
+	@echo "make compare    is the headline table a valid comparison at all"
 
 bootstrap:
 	./scripts/bootstrap.sh
@@ -77,6 +78,11 @@ recheck:
 	$(PY) scripts/recheck_runs.py --write \
 	  --advisor-reference results/A1-offline-n1000-c8-rep2
 	$(PY) scripts/results_index.py --write
+
+# Every headline number is a DIFFERENCE between two runs. This asks whether
+# those runs differ only in the treatment being studied.
+compare:
+	$(PY) scripts/compare_runs.py --headline
 
 verify:
 	@echo "--- upstream does not compile (expected) ---"

@@ -85,6 +85,15 @@ class AllocatedCost:
 # the estimated split
 # --------------------------------------------------------------------------
 
+# Fit-quality thresholds for the attribution regressions.
+#
+# Stated here rather than inline so they can be cited and argued with. They
+# gate the SPLIT only -- the measured total is wall-clock x rate and does not
+# depend on any fit.
+MIN_R2 = 0.20            # below this the linear model explains almost nothing
+MIN_TOKEN_SPREAD = 50.0  # tokens; too little variation to identify a slope
+
+
 @dataclass
 class TokenWeights:
     """Fitted ATTRIBUTION WEIGHTS -- deliberately not called GPU-seconds/token.
@@ -123,6 +132,19 @@ class TokenWeights:
     n_calls: int = 0
     concurrency: int = 1
     note: str = ""
+    # Values BEFORE clamping, kept so a degenerate fit stays visible. A
+    # negative slope reported as 1e-12 looks like a tiny cost; it is actually
+    # a model that does not fit.
+    raw_a_prefill: float = float("nan")
+    raw_b_decode: float = float("nan")
+    raw_alpha_request_s: float = float("nan")
+    raw_beta_decode_s: float = float("nan")
+    problems: list = field(default_factory=list)
+    fatal_problems: list = field(default_factory=list)
+
+    @property
+    def degenerate(self) -> bool:
+        return bool(self.problems)
 
     @property
     def decode_ratio(self) -> float:
@@ -169,6 +191,18 @@ class TokenWeights:
             "r2_decode_fit": self.r2_decode,
             "n_calls": self.n_calls,
             "fitted_at_concurrency": self.concurrency,
+            "raw_marginal_s_per_prefill_token": self.raw_a_prefill,
+            "raw_marginal_s_per_decode_token": self.raw_b_decode,
+            "degenerate": self.degenerate,
+            "fit_unusable": bool(self.fatal_problems),
+            "fit_problems": list(self.problems),
+            "fit_fatal_problems": list(self.fatal_problems),
+            "_degenerate_note": (
+                "coefficients are clamped to small positives so downstream "
+                "arithmetic stays finite. When fit_problems is non-empty the "
+                "clamped values are not a measurement of anything: the "
+                "per-query cost DISTRIBUTION should be disregarded, though the "
+                "measured total is unaffected because it is wall-clock x rate."),
             "note": self.note,
         }
 
@@ -226,11 +260,61 @@ def fit_token_weights(calls: Sequence[dict], concurrency: int = 1) -> TokenWeigh
                 f"include queueing delay, so these weights are contaminated -- "
                 f"prefer --weights-from a C=1 run")
 
+    # FIT SANITY. Clamping is not the same as fitting.
+    #
+    # A negative prefill slope means the regression found that longer prompts
+    # take LESS time -- which is not a small marginal cost, it is evidence that
+    # the model does not describe the data. max(a, 1e-12) turns that into a
+    # well-behaved number meaning "tokens are free", every per-query cost
+    # collapses onto the fixed overhead, and the distribution the Systems
+    # prompt asks for becomes noise wearing a plausible shape.
+    #
+    # The clamps stay, because downstream arithmetic needs finite positives.
+    # What changes is that the raw values and the diagnosis travel with them.
+    # Three different things, kept apart because they warrant different
+    # responses:
+    #
+    #   FATAL         a slope <= 0. The model is contradicted by the data --
+    #                 longer prompts taking less time is not a small cost, it
+    #                 is a wrong model. Clamping publishes "tokens are free".
+    #   UNIDENTIFIED  the inputs barely vary, so no slope could be recovered
+    #                 from them. Not a bad fit; not a fit at all.
+    #   WEAK          a real fit that explains little. Worth recording, not
+    #                 worth refusing -- decode timing at C=1 is genuinely noisy.
+    problems: list[str] = []
+    fatal: list[str] = []
+
+    spread = float(fresh.max() - fresh.min()) if len(fresh) else 0.0
+    if spread < MIN_TOKEN_SPREAD:
+        problems.append(f"prompt lengths span only {spread:.0f} tokens; too "
+                        f"little variation to identify a prefill slope")
+    elif a <= 0:
+        fatal.append(f"prefill slope is {a:.3e} (<= 0): TTFT does not increase "
+                     f"with prompt length in this data, so the linear model is "
+                     f"contradicted rather than merely imprecise")
+    elif r2p == r2p and r2p < MIN_R2:
+        problems.append(f"prefill fit R^2={r2p:.3f} < {MIN_R2}")
+
+    if decode_rows:
+        d_spread = float(out_tok.max() - out_tok.min())
+        if d_spread < MIN_TOKEN_SPREAD:
+            problems.append(f"completion lengths span only {d_spread:.0f} "
+                            f"tokens; decode slope is not identifiable")
+        elif b <= 0:
+            fatal.append(f"decode slope is {b:.3e} (<= 0): decode time does "
+                         f"not increase with completion length in this data")
+        elif r2d == r2d and r2d < MIN_R2:
+            problems.append(f"decode fit R^2={r2d:.3f} < {MIN_R2}")
+    problems = fatal + problems
+
     return TokenWeights(
         a_prefill=max(a, 1e-12), b_decode=max(b, 1e-12),
         alpha_request_s=max(alpha, 0.0), beta_decode_s=max(beta, 0.0),
         r2_prefill=r2p, r2_decode=r2d, r2=r2p,
         n_calls=len(rows), concurrency=concurrency, note=note,
+        raw_a_prefill=a, raw_b_decode=b,
+        raw_alpha_request_s=alpha, raw_beta_decode_s=beta,
+        problems=problems, fatal_problems=fatal,
     )
 
 
@@ -257,10 +341,22 @@ def attribute(
     """Divide the measured total between stages, in proportion to token work."""
     agg: dict[str, dict[str, float]] = {}
     for c in calls:
-        if c.get("error"):
-            # Failed attempts still consumed GPU time -- the prefill ran before
-            # the failure. Attributed, not dropped.
-            pass
+        if c.get("error") and not (c.get("prompt_tokens") or 0):
+            # A failed attempt DID consume GPU time -- some prefill ran before
+            # it died -- but if the failure left no token counts there is
+            # nothing to weight it by. Bucketed explicitly rather than dropped,
+            # so its share is visible as unattributed instead of being
+            # redistributed across the stages that did report tokens.
+            #
+            # The previous version of this loop was `if c.get("error"): pass`,
+            # a branch that did nothing, under a comment claiming failed calls
+            # were attributed. They were not: report.py passed only ok_llm, so
+            # no failed call ever reached this function at all. Comment,
+            # branch and caller each described a different behaviour.
+            s = agg.setdefault("unattributed_failed_attempt",
+                               {"calls": 0, "p": 0, "d": 0, "cached": 0, "w": 0.0})
+            s["calls"] += 1
+            continue
         s = agg.setdefault(c.get("agent") or "unattributed",
                            {"calls": 0, "p": 0, "d": 0, "cached": 0, "w": 0.0})
         s["calls"] += 1

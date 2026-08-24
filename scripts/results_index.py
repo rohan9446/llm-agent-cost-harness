@@ -66,8 +66,12 @@ def collect(run_dir: str) -> dict | None:
 
     rck_checks = rck.get("checks") or []
     added = set(rck.get("_added_after_the_runs") or [])
+    # A check that could not be evaluated here is a gap, not a failure --
+    # same rule check_run and recheck_runs use.
     substantive = [c for c in rck_checks
-                   if not c.get("ok") and c.get("name") not in added]
+                   if not c.get("ok")
+                   and c.get("verifiable", True)
+                   and c.get("name") not in added]
 
     return {
         "dir": os.path.basename(run_dir),
@@ -83,8 +87,10 @@ def collect(run_dir: str) -> dict | None:
         "ticker_acc": ((par.get("derived") or {}).get("ticker_set") or {}).get("accuracy"),
         "all_topics": adv.get("all_topics_rate"),
         "validity_then": (sum(1 for c in val if c.get("ok")), len(val)),
-        "validity_now": (sum(1 for c in rck_checks if c.get("ok")),
-                         len(rck_checks)) if rck_checks else None,
+        "validity_now": (
+            sum(1 for c in rck_checks
+                if c.get("ok") and c.get("verifiable", True)),
+            len(rck_checks)) if rck_checks else None,
         "substantive": [c["name"] for c in substantive],
         "diagnosis": rck.get("_diagnosis") or {},
         "ref_supplied": rck.get("_advisor_reference_supplied_at_recheck"),

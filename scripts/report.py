@@ -113,6 +113,10 @@ def main() -> int:
                     default=_rate.get("usd_per_gpu_hour"))
     ap.add_argument("--rate-source", default=_rate.get("source"))
     ap.add_argument("--n-gpus", type=int, default=_rate.get("n_gpus", 1))
+    ap.add_argument("--allow-degenerate-fit", action="store_true",
+                    help="publish a report whose attribution regression is "
+                         "contradicted by the data; recorded in report.json "
+                         "as fit_unusable")
     ap.add_argument("--weights-from", default=None,
                     help="another run dir whose C=1 calls should supply the "
                          "token weights; strongly preferred over fitting on a "
@@ -191,6 +195,21 @@ def main() -> int:
                     f"  {os.path.basename(d)}: {got!r}\n"
                     f"Attribution weights fitted on one system do not describe "
                     f"another.")
+        # ...and the same SYSTEM, which the five named fields above do not
+        # establish. vLLM version, dtype, tensor-parallel size, KV-cache
+        # budget and the GPU model all move fitted TTFT and decode slopes, and
+        # none of them were compared while the comment claimed otherwise.
+        fp_here = validity.system_fingerprint(manifest)
+        fp_cal = validity.system_fingerprint(m)
+        if fp_here and fp_cal and fp_here != fp_cal:
+            raise SystemExit(
+                f"calibration system fingerprint mismatch:\n"
+                f"  {os.path.basename(a.weights_from)}: {fp_cal[:16]}\n"
+                f"  {os.path.basename(d)}: {fp_here[:16]}\n"
+                f"Compared fields: {', '.join(validity.FINGERPRINT_SERVER_FIELDS)}, "
+                f"selected server argv, GPU model/driver/clock, vllm and torch "
+                f"versions.\nAttribution weights fitted on one system do not "
+                f"describe another.")
         if (m.get("concurrency") or 1) != 1:
             raise SystemExit(
                 f"--weights-from {os.path.basename(a.weights_from)} ran at "
@@ -202,7 +221,36 @@ def main() -> int:
     weights = cost.fit_token_weights(weight_src, concurrency=weight_conc)
     weights.note = (weights.note + " " + note).strip()
 
-    stages = cost.attribute(ok_llm, weights, total)
+    # A regression the data contradicts is not a small measurement error.
+    # max(a, 1e-12) turns a negative slope into "tokens are free", every
+    # per-query cost collapses onto the fixed overhead, and the distribution
+    # the Systems prompt asks for becomes noise in a plausible shape.
+    #
+    # Fatal only for sign violations, which are unambiguous. Weak R^2 and
+    # unidentifiable slopes are recorded in the artifact and printed, not
+    # refused -- decode timing at C=1 is genuinely noisy, and a gate that fires
+    # on honest noise is a gate people learn to pass with a flag.
+    if weights.fatal_problems and not a.allow_degenerate_fit:
+        raise SystemExit(
+            "attribution fit is contradicted by the data:\n"
+            + "\n".join(f"  - {p}" for p in weights.fatal_problems)
+            + "\n\nThe MEASURED total is unaffected (wall-clock x rate), but the "
+              "per-stage and per-query split would be meaningless.\n"
+              "Fit on a C=1 calibration run with --weights-from, or pass "
+              "--allow-degenerate-fit to publish it marked unusable.")
+    if weights.problems:
+        print("attribution fit warnings:")
+        for pr in weights.problems:
+            print(f"  ! {pr}")
+
+    # Every call, not just the successful ones.
+    #
+    # attribute() has always had a branch for failed attempts; report.py handed
+    # it ok_llm, so that branch was unreachable and the failed calls' share of
+    # the measured total was silently redistributed across the stages that did
+    # report tokens. Harmless while --max-llm-call-failures is 0, which is the
+    # gate for official runs, and wrong the moment anyone raises it.
+    stages = cost.attribute(llm_rows, weights, total)
 
     # ---- per-query cost, in proportion to token work -----------------------
     per_query_w: dict[str, float] = {}

@@ -146,21 +146,24 @@ def recheck(run_dir: str, write: bool,
     fields = {f for f in RunManifest.__dataclass_fields__}
     manifest = RunManifest(**{k: v for k, v in man.items() if k in fields})
 
-    results = _jsonl(os.path.join(run_dir, "results.jsonl"))
     failures = _jsonl(os.path.join(run_dir, "failures.jsonl"))
-    if not results:
+    results = _jsonl(os.path.join(run_dir, "results.jsonl")) or None
+    if results is None:
         # results.jsonl is gitignored (it carries supplied query text), so a
-        # clone will not have it. n_queries minus failures is the count the
-        # checks need; the per-result price-source check cannot run without the
-        # rows and is reported as such rather than silently passing.
-        n_ok = int(man.get("n_queries", 0)) - len(failures)
-        results = [{"query_id": f"unavailable-{i}", "metrics": {}}
-                   for i in range(max(0, n_ok))]
-        print(f"  (results.jsonl absent -- reconstructed {len(results)} rows "
-              f"from the manifest; prices_from_snapshot cannot be re-verified)")
+        # clone will not have it. Pass None -- NOT placeholder rows.
+        #
+        # This used to fabricate {"query_id": ..., "metrics": {}} rows so the
+        # count would come out right. check_run then iterated over zero price
+        # reads, found zero bad ones, and wrote "prices_from_snapshot: all
+        # reads from snapshot" into the artifact, while this very function
+        # printed that it could not be re-verified. The empty set satisfies
+        # any universal claim; handing it to a checker manufactures a pass.
+        print(f"  (results.jsonl absent -- checks needing per-query rows "
+              f"report as gaps, not as passes)")
 
     advisor = _json(os.path.join(run_dir, "advisor_eval.json"))
     ref = None
+    ref_dir_used = ""
 
     # A reference supplied HERE is the reviewer stating the comparison, not the
     # run claiming it. That distinction is worth keeping: the A2 arms were
@@ -185,6 +188,7 @@ def recheck(run_dir: str, write: bool,
                      os.path.join(ROOT, manifest.advisor_reference)):
             ref = _json(os.path.join(cand, "advisor_eval.json"))
             if ref:
+                ref_dir_used = cand
                 break
 
     # parser_eval.json has to be LOADED, not left as None -- omitting it made
@@ -194,17 +198,28 @@ def recheck(run_dir: str, write: bool,
     # is worse than no gate: it retires the signal by crying wolf.
     parser = _json(os.path.join(run_dir, "parser_eval.json"))
 
+    # The reference is an experiment, not a score file: its manifest comes too,
+    # so the same-experiment binding can actually be evaluated.
+    if ref is not None and ref_dir_used:
+        ref = {"advisor": ref, "path": manifest.advisor_reference,
+               "manifest": _json(os.path.join(ref_dir_used, "manifest.json"))}
+
     checks = validity.check_run(
         manifest, {**counters, "parser_tiers": counters.get("parser_tiers") or {}},
         results, failures, advisor=advisor, advisor_reference=ref,
         parser=parser)
 
-    n_pass = sum(1 for c in checks if c.ok)
+    n_pass = sum(1 for c in checks if c.ok and c.verifiable)
     real, missing = [], []
     for c in checks:
-        if c.ok:
+        if c.ok and c.verifiable:
             continue
-        (missing if c.name in ADDED_AFTER_THE_RUNS else real).append(c)
+        # A check can be a gap two ways: the harness knows it cannot evaluate
+        # it here (verifiable=False), or the field postdates the run.
+        if not c.verifiable or c.name in ADDED_AFTER_THE_RUNS:
+            missing.append(c)
+        else:
+            real.append(c)
 
     n_attempted = len(results) + len(failures)
     print(f"\n{os.path.basename(run_dir)}  stage={manifest.stage} "
@@ -217,8 +232,9 @@ def recheck(run_dir: str, write: bool,
         if why:
             print(f"         -> {why}")
     for c in missing:
-        print(f"  gap    {c.name}: field not recorded at run time "
-              f"-- not backfilled on purpose")
+        print(f"  gap    {c.name}: "
+              + (c.detail[:120] if not c.verifiable
+                 else "field not recorded at run time -- not backfilled on purpose"))
 
     if write:
         p = os.path.join(run_dir, "validity.recheck.json")

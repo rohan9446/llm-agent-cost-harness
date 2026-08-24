@@ -61,8 +61,29 @@ class RunManifest:
     llm_max_attempts: int = 0             # attempts per call, incl. the first
     generation: dict[str, Any] = field(default_factory=dict)
     # A2 non-inferiority gating
+    # A reference is an EXPERIMENT, not a path.
+    #
+    # advisor_reference was a filesystem string, and the only thing binding the
+    # two arms together was that they had been scored by the same code. Nothing
+    # required them to have run the same queries, on the same model, against
+    # the same price snapshot -- so a non-inferiority verdict could compare two
+    # different populations and read as confidently as a real one.
     advisor_reference: str = ""           # run dir whose quality this must match
+    advisor_reference_run_id: str = ""
+    advisor_reference_sha256: str = ""    # of the reference's advisor_eval.json
     advisor_gate_margins: dict[str, float] = field(default_factory=dict)
+
+    # Recorded, not read from the live environment at check time. See the
+    # template_fallback_disabled check.
+    advisor_template_fallback_allowed: bool | None = None
+
+    # Warm-up is part of the experimental protocol, so its outcome is part of
+    # what the run claims. warmed_workers used to be the number of warm-ups
+    # SUBMITTED; failures were printed and swallowed, and llm.COUNTER.reset()
+    # then erased them from the counters, so a cold worker was invisible to
+    # every gate while the manifest asserted the pool was warm.
+    warmup_attempted: int = 0
+    warmup_failed: int = 0
     telemetry_devices: str = ""           # GPUs nvidia-smi was scoped to
     server_devices: str = ""              # GPUs the server was launched on
     allow_unverified_server: bool = False
@@ -155,6 +176,148 @@ def source_tree_sha256(root: str) -> str:
             h.update(b"<unreadable>")
         h.update(b"\0")
     return h.hexdigest() if paths else ""
+
+
+# --------------------------------------------------------------------------
+# what makes two runs comparable
+# --------------------------------------------------------------------------
+#
+# Every headline number in this project is a DIFFERENCE between two runs, and
+# until now nothing verified that the two runs differed only in the thing being
+# studied. The A2 gate at least named its reference; the -28.4% cost comparison
+# in the README names nothing at all -- three run directories sit in a table
+# and a reader subtracts them.
+#
+# These are the fields that must match for a comparison to mean anything. The
+# list is explicit and short on purpose: an over-broad rule rejects runs for
+# differences nobody cares about and gets switched off, which is worse than no
+# rule. Anything excluded is excluded with a reason, below.
+COMPARABLE_FIELDS: tuple[tuple[str, str], ...] = (
+    ("model",                "model requested"),
+    ("served_model",         "model the server advertised"),
+    ("snapshot_id",          "frozen price snapshot"),
+    ("query_content_sha256", "the query TEXT that ran"),
+    ("corpus_sha256",        "the corpus file it came from"),
+    ("query_set_id",         "the frozen id list"),
+    ("n_queries",            "workload size"),
+    ("prefix_caching",       "server prefix caching"),
+    ("server_devices",       "GPUs the server was given"),
+)
+
+# Deliberately NOT compared, and why:
+#
+#   stage, run_id, started_at, finished_at   identity and timing of the run
+#   concurrency                              the treatment in a concurrency
+#                                            sweep; compared separately where
+#                                            it matters
+#   parser_kind                              the treatment in B0 -> A1
+#   advisor_style / advisor_max_tokens /
+#     advisor_temperature                    the treatment in A1 -> A2
+#   host_id, port, pid, log flags            not performance-relevant
+#
+# The treatment fields are excluded because a comparison exists precisely to
+# vary them. Which ones are legitimately varying depends on the comparison, so
+# the caller says so rather than this list guessing.
+
+
+def comparability(runs: list[tuple[str, dict]],
+                  varying: tuple[str, ...] = ()) -> list[Check]:
+    """Are these runs a valid comparison? One Check per field.
+
+    `runs` is [(label, manifest_dict), ...]. `varying` names the fields this
+    comparison is deliberately changing, which are skipped.
+
+    A field that is EMPTY on every run is not evidence of agreement -- two runs
+    that both fail to record the query content hash are not thereby shown to
+    have run the same queries. Those report as unverifiable, which is why the
+    archived runs cannot satisfy this until they are re-measured.
+    """
+    checks: list[Check] = []
+    if len(runs) < 2:
+        return checks
+    labels = [r[0] for r in runs]
+
+    for fieldname, human in COMPARABLE_FIELDS:
+        if fieldname in varying:
+            continue
+        vals = [(lbl, (m or {}).get(fieldname)) for lbl, m in runs]
+        present = [v for _, v in vals if v not in (None, "", 0)]
+        if not present:
+            checks.append(Check(
+                f"comparable::{fieldname}", False,
+                f"{human} is not recorded in any of {', '.join(labels)} -- "
+                f"absence on both sides is not agreement",
+                verifiable=False,
+            ))
+            continue
+        if len(present) != len(vals):
+            missing = [lbl for lbl, v in vals if v in (None, "", 0)]
+            checks.append(Check(
+                f"comparable::{fieldname}", False,
+                f"{human} recorded for some runs but not {', '.join(missing)}",
+                verifiable=False,
+            ))
+            continue
+        uniq = {str(v) for _, v in vals}
+        checks.append(Check(
+            f"comparable::{fieldname}",
+            len(uniq) == 1,
+            f"{human}: " + ("identical across "
+                            f"{len(vals)} runs" if len(uniq) == 1
+                            else "; ".join(f"{lbl}={str(v)[:24]}" for lbl, v in vals)),
+        ))
+    return checks
+
+
+# Performance-relevant server configuration, for the calibration fingerprint.
+#
+# Named subset rather than "the whole launch record", because the launch record
+# also carries the port, the pid and a timestamp, and a fingerprint that
+# changes when the port changes is a fingerprint people learn to override.
+FINGERPRINT_SERVER_FIELDS = ("vllm_version", "model", "dtype",
+                             "tensor_parallel_size", "prefix_caching",
+                             "cuda_visible_devices")
+FINGERPRINT_ARGV_FLAGS = ("--max-model-len", "--gpu-memory-utilization",
+                          "--dtype", "--tensor-parallel-size",
+                          "--kv-cache-dtype", "--max-num-seqs",
+                          "--enforce-eager", "--no-enable-prefix-caching",
+                          "--enable-prefix-caching")
+
+
+def system_fingerprint(manifest: dict) -> str:
+    """One hash over the configuration that changes attribution physics.
+
+    --weights-from already refuses a mismatched model, snapshot, prefix-caching
+    setting, GPU set or concurrency. It did not compare the vLLM version, the
+    dtype, the tensor-parallel size, the KV-cache budget or the GPU model,
+    while the comment above it claimed the weights "describe a SYSTEM". Fitted
+    TTFT and decode slopes are properties of all of those.
+    """
+    server = (manifest.get("server") or {})
+    env = (manifest.get("env") or {})
+    parts: list[str] = []
+    for k in FINGERPRINT_SERVER_FIELDS:
+        parts.append(f"{k}={server.get(k)}")
+    argv = server.get("argv") or []
+    flags = {}
+    for i, tok in enumerate(argv):
+        if not isinstance(tok, str) or not tok.startswith("--"):
+            continue
+        if "=" in tok:
+            k, v = tok.split("=", 1)
+        else:
+            nxt = argv[i + 1] if i + 1 < len(argv) else ""
+            v = "" if (not isinstance(nxt, str) or nxt.startswith("--")) else nxt
+            k = tok
+        if k in FINGERPRINT_ARGV_FLAGS:
+            flags[k] = v
+    for k in sorted(flags):
+        parts.append(f"{k}={flags[k]}")
+    for g in (env.get("nvidia_smi") or []):
+        parts.append(f"gpu={g.get('name')}|{g.get('driver')}|{g.get('sm_clock_max')}")
+    for k in ("vllm", "torch"):
+        parts.append(f"{k}={env.get(k)}")
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()
 
 
 def _cmd(argv: list[str]) -> str | None:
@@ -251,23 +414,57 @@ class Check:
     name: str
     ok: bool
     detail: str
+    verifiable: bool = True
+    """False when the EVIDENCE for this check is not available here.
+
+    Pass, fail and "cannot tell" are three different states, and collapsing the
+    third into either of the other two produces a lie. This flag exists because
+    it produced one: recheck_runs.py cannot see results.jsonl (it is gitignored,
+    since it carries supplied query text), so it fabricated placeholder rows
+    with empty `metrics` and handed them to check_run. The price-source check
+    iterated over zero price reads, found zero bad ones, and reported
+
+        "prices_from_snapshot": ok: true, "all reads from snapshot"
+
+    into every published validity.recheck.json -- while the same script printed
+    "prices_from_snapshot cannot be re-verified" to the terminal. Vacuous truth:
+    an empty set satisfies any universal claim.
+
+    A check with verifiable=False is never a pass and never a failure. It is a
+    gap, reported as one, and it does not gate anything.
+    """
 
     def line(self) -> str:
-        return f"  [{'PASS' if self.ok else 'FAIL'}] {self.name}: {self.detail}"
+        state = "GAP " if not self.verifiable else ("PASS" if self.ok else "FAIL")
+        return f"  [{state}] {self.name}: {self.detail}"
 
 
 def check_run(
     manifest: RunManifest,
     counter_snapshot: dict[str, Any],
-    results: list[dict],
+    results: list[dict] | None,
     failures: list[dict],
     advisor: dict[str, Any] | None = None,
     advisor_reference: dict[str, Any] | None = None,
     parser: dict[str, Any] | None = None,
 ) -> list[Check]:
-    """Every check that decides whether this run is reportable."""
+    """Every check that decides whether this run is reportable.
+
+    `results` may be None, meaning the per-query rows are not available here --
+    the normal case when re-judging an archived run from a clone, because
+    results.jsonl carries supplied query text and is not published. Checks that
+    need those rows then report as unverifiable rather than being handed
+    placeholder data. Passing fabricated rows instead is how
+    "prices_from_snapshot: all reads from snapshot" got written into artifacts
+    for runs where nothing was read at all.
+    """
     checks: list[Check] = []
-    n_ok = len(results)
+    results_available = results is not None
+    rows: list[dict] = results or []
+    # With no rows, the success count comes from the manifest and the failure
+    # list, which are both published.
+    n_ok = len(rows) if results_available else max(
+        0, int(manifest.n_queries or 0) - len(failures))
 
     # A1 changes how many model calls a correct run should make, so the count
     # checks have to know which parser ran. Loosening them for every stage
@@ -339,13 +536,36 @@ def check_run(
         ))
 
     # 3. no result came from the template fallback
-    template_allowed = os.environ.get("ADVISOR_ALLOW_TEMPLATE") == "1"
-    checks.append(Check(
-        "template_fallback_disabled",
-        not template_allowed,
-        "ADVISOR_ALLOW_TEMPLATE is unset" if not template_allowed
-        else "ADVISOR_ALLOW_TEMPLATE=1 -- summaries may be templated, run is not measurable",
-    ))
+    #
+    # READ FROM THE MANIFEST, NOT FROM THIS SHELL.
+    #
+    # This used to be os.environ.get("ADVISOR_ALLOW_TEMPLATE"), which is the
+    # right question asked at the wrong time. During a measurement the live
+    # environment IS the run's environment. During a recheck, days later, it is
+    # whatever shell happens to be open -- so a run made with the template
+    # fallback enabled would be re-judged from a clean shell and reported as
+    # "ADVISOR_ALLOW_TEMPLATE is unset", a statement about the auditor's
+    # terminal presented as a fact about the experiment.
+    #
+    # run_bench records the value it actually ran under. Runs made before the
+    # field existed report as a gap, which is what they are.
+    recorded = manifest.advisor_template_fallback_allowed
+    if recorded is None:
+        checks.append(Check(
+            "template_fallback_disabled", False,
+            "not recorded at run time -- this run predates the field, and the "
+            "live environment says nothing about the environment it ran in",
+            verifiable=False,
+        ))
+    else:
+        checks.append(Check(
+            "template_fallback_disabled",
+            not recorded,
+            "ADVISOR_ALLOW_TEMPLATE was unset for this run (from the manifest)"
+            if not recorded else
+            "ADVISOR_ALLOW_TEMPLATE=1 at run time -- summaries may be "
+            "templated, run is not measurable",
+        ))
 
     # 4. exactly one model requested, and the live server advertises it
     requested = set(counter_snapshot.get("requested_models", []))
@@ -364,17 +584,43 @@ def check_run(
     ))
 
     # 5. every price read came from the frozen snapshot
-    bad_source = []
-    for r in results:
-        for t, m in (r.get("metrics") or {}).items():
-            if m.get("source") != "snapshot":
-                bad_source.append((r.get("query_id"), t, m.get("source")))
-    checks.append(Check(
-        "prices_from_snapshot",
-        not bad_source,
-        "all reads from snapshot" if not bad_source
-        else f"{len(bad_source)} reads not from snapshot, e.g. {bad_source[:3]}",
-    ))
+    #
+    # Needs the per-query rows. Without them this is UNVERIFIABLE, not true:
+    # "no read came from outside the snapshot" is trivially satisfied by having
+    # no reads, and that is exactly the shape the placeholder rows had.
+    if not results_available:
+        checks.append(Check(
+            "prices_from_snapshot", False,
+            "results.jsonl is not available here, so the per-query price "
+            "sources cannot be re-read. The run's own validity.json recorded "
+            "this check at measurement time, when the rows existed",
+            verifiable=False,
+        ))
+    else:
+        bad_source = []
+        n_reads = 0
+        for r in rows:
+            for t, m in (r.get("metrics") or {}).items():
+                n_reads += 1
+                if m.get("source") != "snapshot":
+                    bad_source.append((r.get("query_id"), t, m.get("source")))
+        # Zero reads is not a pass either. A run that priced nothing has not
+        # demonstrated that it priced everything from the snapshot.
+        if n_reads == 0:
+            checks.append(Check(
+                "prices_from_snapshot", False,
+                f"{len(rows)} result row(s) carried no price reads at all -- "
+                f"nothing to verify, which is not the same as nothing wrong",
+                verifiable=False,
+            ))
+        else:
+            checks.append(Check(
+                "prices_from_snapshot",
+                not bad_source,
+                f"{n_reads} reads, all from snapshot" if not bad_source
+                else f"{len(bad_source)} of {n_reads} reads not from snapshot, "
+                     f"e.g. {bad_source[:3]}",
+            ))
 
     # 6. the snapshot holds real market data, not a test fixture
     #    The smoke test builds a synthetic snapshot so the harness can be
@@ -462,6 +708,32 @@ def check_run(
         f"-- a retried call still spent measured wall-clock, so it is an "
         f"infrastructure fault even when the query it belonged to succeeded",
     ))
+
+    # 8b. every worker the measurement ran through was actually warmed.
+    #
+    # Warm-up is protocol, not best-effort. The pool is built before warm-up so
+    # each thread constructs its own client and connection there rather than
+    # inside a measured request -- but failures were caught, printed and
+    # ignored, and llm.COUNTER.reset() then wiped them from the counters. A
+    # worker whose warm-up died was cold, invisible to every other check, and
+    # the manifest still recorded the full pool as warmed because that number
+    # was the count SUBMITTED.
+    if manifest.warmup_attempted:
+        checks.append(Check(
+            "every_worker_warmed",
+            manifest.warmup_failed == 0
+            and manifest.warmed_workers >= manifest.n_workers,
+            f"{manifest.warmed_workers}/{manifest.n_workers} workers warmed, "
+            f"{manifest.warmup_failed} warm-up failure(s) of "
+            f"{manifest.warmup_attempted} -- a cold worker puts client and TCP "
+            f"setup inside the first measured request on that thread",
+        ))
+    else:
+        checks.append(Check(
+            "every_worker_warmed", False,
+            "warm-up outcome not recorded at run time",
+            verifiable=False,
+        ))
 
     # 9. the workload was fixed before measurement
     checks.append(Check(
@@ -575,8 +847,19 @@ DEFAULT_ADVISOR_MARGINS = {
 
 def _advisor_gates(manifest: RunManifest, advisor: dict[str, Any] | None,
                    ref: dict[str, Any] | None) -> list[Check]:
+    """`ref` is a bundle: {"advisor": ..., "manifest": ..., "path": ...}.
+
+    A bare advisor_eval dict is still accepted, and reports the experiment
+    binding as unverifiable -- which is the honest answer, because with only
+    the scores there is no way to know what produced them.
+    """
     m = {**DEFAULT_ADVISOR_MARGINS, **(manifest.advisor_gate_margins or {})}
     out: list[Check] = []
+
+    ref_manifest: dict[str, Any] | None = None
+    if ref and "advisor" in ref:
+        ref_manifest = ref.get("manifest")
+        ref = ref.get("advisor")
 
     if not advisor or not advisor.get("n"):
         # Scoring used to be wrapped in try/except so that a scoring bug could
@@ -637,6 +920,55 @@ def _advisor_gates(manifest: RunManifest, advisor: dict[str, Any] | None,
         # this whole module exists to prevent.
         return out
 
+    # SAME SCORER IS NOT ENOUGH. SAME EXPERIMENT.
+    #
+    # The scorer check answers "were these two numbers produced by the same
+    # code". It says nothing about whether they were produced from the same
+    # workload, model or price snapshot -- so an A2 arm on the algorithms
+    # corpus could be declared non-inferior to an A1 reference on an easier
+    # 100-query set, and every gate below would agree.
+    #
+    # The Advisor prompt is the treatment, so advisor_* fields are expected to
+    # differ; everything else must match.
+    if ref_manifest is None:
+        out.append(Check(
+            "advisor_reference_same_experiment", False,
+            f"only the reference's scores were loaded, not its manifest -- "
+            f"with the numbers alone there is no way to establish that "
+            f"{manifest.advisor_reference or 'the reference'} ran the same "
+            f"queries on the same model against the same snapshot",
+            verifiable=False,
+        ))
+        return out
+
+    here = {f: getattr(manifest, f, None) for f, _ in COMPARABLE_FIELDS}
+    binding = comparability(
+        [("this run", here), (manifest.advisor_reference or "reference", ref_manifest)],
+        varying=("advisor_style", "advisor_max_tokens", "advisor_temperature"))
+    hard = [c for c in binding if c.verifiable and not c.ok]
+    gaps = [c for c in binding if not c.verifiable]
+    if hard:
+        out.append(Check(
+            "advisor_reference_same_experiment", False,
+            "; ".join(c.detail for c in hard[:3]),
+        ))
+        return out
+    if gaps:
+        out.append(Check(
+            "advisor_reference_same_experiment", False,
+            f"{len(gaps)} binding field(s) not recorded on one or both runs: "
+            + ", ".join(c.name.split("::")[-1] for c in gaps)
+            + " -- these runs predate the provenance fields, so the comparison "
+              "cannot be established from the artifacts; re-measure to close it",
+            verifiable=False,
+        ))
+    else:
+        out.append(Check(
+            "advisor_reference_same_experiment", True,
+            f"same model, snapshot, query content and workload size as "
+            f"{manifest.advisor_reference}; only the Advisor prompt differs",
+        ))
+
     topics, topics_ref = advisor["all_topics_rate"], ref["all_topics_rate"]
     out.append(Check(
         "advisor_topic_coverage_non_inferior",
@@ -666,10 +998,18 @@ def _advisor_gates(manifest: RunManifest, advisor: dict[str, Any] | None,
 
 
 def enforce(checks: list[Check], strict: bool = True) -> None:
-    failed = [c for c in checks if not c.ok]
+    # An unverifiable check gates nothing -- it is not evidence either way.
+    # A LIVE run should have none: every one of them has its evidence to hand,
+    # and a gap appearing here means the harness failed to record something it
+    # was standing right next to.
+    failed = [c for c in checks if not c.ok and c.verifiable]
+    gaps = [c for c in checks if not c.verifiable]
     print("run validity")
     for c in checks:
         print(c.line())
+    if gaps:
+        print(f"  ({len(gaps)} check(s) could not be evaluated from the "
+              f"evidence available; they gate nothing and are not passes)")
     if failed and strict:
         raise ValidityError(
             f"{len(failed)} validity check(s) failed; this run is not reportable. "
