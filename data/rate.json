@@ -1,0 +1,9 @@
+{
+  "_what": "The GPU price every dollar figure in this repository is computed from. One file, so the README, METHODS, the Makefile, run.sh and every report.json cannot drift apart.",
+  "_why_this_file_exists": "report.py defaulted to $1.60/GPU-hour with rate_source 'PLACEHOLDER -- cite a real rate', and neither `make report` nor `./run.sh report` passed the real rate. So the documented reproduction command produced cost numbers 15% higher than the published table, with a placeholder citation, and the only thing preventing that was remembering to type --usd-per-gpu-hour by hand. It was not remembered.",
+  "usd_per_gpu_hour": 1.39,
+  "n_gpus": 1,
+  "source": "RunPod A100 PCIe 80GB on-demand, retrieved 2026-08-22",
+  "_rental_equivalent": "The GPU was not rented. This is an opportunity cost presented as one; calling it an incurred cost would be a lie that costs nothing to avoid.",
+  "_spread": "Published rates for the same silicon span roughly 8x across providers, which is why every figure here is one multiplication from any other provider's, and why stage comparisons are quoted as ratios rather than absolute dollars."
+}

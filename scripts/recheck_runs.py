@@ -53,6 +53,11 @@ ADDED_AFTER_THE_RUNS = {
     "query_content_pinned",
     "source_tree_pinned",
     "llm_calls_all_succeeded_first_time",
+    # The alias map and scorer hashes postdate every archived parser_eval.json.
+    # Unlike the two above, this one CAN be closed without re-measuring --
+    # scripts/rescore_parser.py recomputes the score from results.jsonl, which
+    # was frozen at run time -- so it is a gap only until that is run.
+    "parser_scorer_pinned",
 }
 
 
@@ -182,9 +187,17 @@ def recheck(run_dir: str, write: bool,
             if ref:
                 break
 
+    # parser_eval.json has to be LOADED, not left as None -- omitting it made
+    # check_run see zero scored queries and fail parser_quality_scored on all
+    # 27 archived runs, every one of which has the artifact sitting next to the
+    # manifest. A gate that reports "missing" because the checker did not look
+    # is worse than no gate: it retires the signal by crying wolf.
+    parser = _json(os.path.join(run_dir, "parser_eval.json"))
+
     checks = validity.check_run(
         manifest, {**counters, "parser_tiers": counters.get("parser_tiers") or {}},
-        results, failures, advisor=advisor, advisor_reference=ref)
+        results, failures, advisor=advisor, advisor_reference=ref,
+        parser=parser)
 
     n_pass = sum(1 for c in checks if c.ok)
     real, missing = [], []

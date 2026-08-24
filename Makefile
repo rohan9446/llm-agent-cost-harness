@@ -73,6 +73,7 @@ audit:
 recheck:
 # rep2, not rep1: the A1 rep1 run predates advisor_eval.py and has no briefing
 # scores, so it cannot be the thing a brevity arm is held against.
+	$(PY) scripts/rescore_parser.py --write
 	$(PY) scripts/recheck_runs.py --write \
 	  --advisor-reference results/A1-offline-n1000-c8-rep2
 	$(PY) scripts/results_index.py --write

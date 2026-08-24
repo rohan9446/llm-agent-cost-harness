@@ -1,0 +1,94 @@
+{
+  "_note": "shipped labels are Canyon Code's; derived labels come from our own alias map, which covers this corpus by construction and proves nothing about generalization",
+  "n_scored": 100,
+  "n_failed_scored": 0,
+  "_failed_note": "parser accuracy is computed over attempted queries, not successful ones: a parse error bad enough to crash the workflow is still a parse error, and excluding it would make the metric most optimistic exactly where the parser is worst",
+  "shipped": {
+    "holding_count": {
+      "n": 100,
+      "accuracy": 1.0
+    },
+    "lookback_value": {
+      "n": 100,
+      "accuracy": 1.0
+    },
+    "lookback_stated_vs_unstated": {
+      "n": 100,
+      "accuracy": 1.0
+    }
+  },
+  "derived": {
+    "ticker_set": {
+      "n": 100,
+      "accuracy": 1.0
+    },
+    "weights_within_1e-3": {
+      "n": 100,
+      "accuracy": 1.0
+    },
+    "weight_max_abs_error_p95": 0.0,
+    "weight_l1_error_mean": 0.0,
+    "n_unresolvable_by_alias_map": 0,
+    "unresolvable_query_ids": []
+  },
+  "by_phrasing": {
+    "equal": {
+      "n": 23,
+      "count_ok": {
+        "n": 23,
+        "accuracy": 1.0
+      },
+      "lookback_value_ok": {
+        "n": 23,
+        "accuracy": 1.0
+      },
+      "ticker_set_ok": {
+        "n": 23,
+        "accuracy": 1.0
+      },
+      "weights_ok": {
+        "n": 23,
+        "accuracy": 1.0
+      }
+    },
+    "percent": {
+      "n": 63,
+      "count_ok": {
+        "n": 63,
+        "accuracy": 1.0
+      },
+      "lookback_value_ok": {
+        "n": 63,
+        "accuracy": 1.0
+      },
+      "ticker_set_ok": {
+        "n": 63,
+        "accuracy": 1.0
+      },
+      "weights_ok": {
+        "n": 63,
+        "accuracy": 1.0
+      }
+    },
+    "unweighted": {
+      "n": 14,
+      "count_ok": {
+        "n": 14,
+        "accuracy": 1.0
+      },
+      "lookback_value_ok": {
+        "n": 14,
+        "accuracy": 1.0
+      },
+      "ticker_set_ok": {
+        "n": 14,
+        "accuracy": 1.0
+      },
+      "weights_ok": {
+        "n": 14,
+        "accuracy": 1.0
+      }
+    }
+  },
+  "mismatches": []
+}

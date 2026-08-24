@@ -97,6 +97,7 @@ verify)
 audit)   ./scripts/pre_commit_audit.sh ;;
 
 recheck)
+  "$PY" scripts/rescore_parser.py --write
   "$PY" scripts/recheck_runs.py --write \
     --advisor-reference results/A1-offline-n1000-c8-rep2
   "$PY" scripts/results_index.py --write

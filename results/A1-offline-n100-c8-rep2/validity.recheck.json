@@ -2,6 +2,7 @@
   "_note": "re-judged under the validity rules current at the time of this file, not the rules the run was made under. Checks listed in _added_after_the_runs postdate the measurement; nothing was backfilled.",
   "_added_after_the_runs": [
     "llm_calls_all_succeeded_first_time",
+    "parser_scorer_pinned",
     "query_content_pinned",
     "source_tree_pinned"
   ],
@@ -113,8 +114,13 @@
     },
     {
       "name": "parser_quality_scored",
-      "ok": false,
-      "detail": "parser_eval covers 0 of 100 attempted queries (need >= 100 successful) -- the accuracy is reported, not gated; its ABSENCE is what is gated here"
+      "ok": true,
+      "detail": "parser_eval covers 100 of 100 attempted queries (need >= 100 successful) -- the accuracy is reported, not gated; its ABSENCE is what is gated here"
+    },
+    {
+      "name": "parser_scorer_pinned",
+      "ok": true,
+      "detail": "vocab c038cd09c585 scorer f87b528fd757 -- derived accuracy is a property of the alias map and the scorer, and neither was recorded anywhere before"
     }
   ]
 }

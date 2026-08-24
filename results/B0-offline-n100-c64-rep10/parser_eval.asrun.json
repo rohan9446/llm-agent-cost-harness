@@ -1,0 +1,259 @@
+{
+  "_note": "shipped labels are Canyon Code's; derived labels come from our own alias map, which covers this corpus by construction and proves nothing about generalization",
+  "n_scored": 100,
+  "n_failed_scored": 2,
+  "_failed_note": "parser accuracy is computed over attempted queries, not successful ones: a parse error bad enough to crash the workflow is still a parse error, and excluding it would make the metric most optimistic exactly where the parser is worst",
+  "shipped": {
+    "holding_count": {
+      "n": 100,
+      "accuracy": 1.0
+    },
+    "lookback_value": {
+      "n": 100,
+      "accuracy": 1.0
+    },
+    "lookback_stated_vs_unstated": {
+      "n": 100,
+      "accuracy": 1.0
+    }
+  },
+  "derived": {
+    "ticker_set": {
+      "n": 100,
+      "accuracy": 0.96
+    },
+    "weights_within_1e-3": {
+      "n": 100,
+      "accuracy": 0.96
+    },
+    "weight_max_abs_error_p95": 2.7755575615628914e-17,
+    "weight_l1_error_mean": 0.015333333333333341,
+    "n_unresolvable_by_alias_map": 0,
+    "unresolvable_query_ids": []
+  },
+  "by_phrasing": {
+    "equal": {
+      "n": 23,
+      "count_ok": {
+        "n": 23,
+        "accuracy": 1.0
+      },
+      "lookback_value_ok": {
+        "n": 23,
+        "accuracy": 1.0
+      },
+      "ticker_set_ok": {
+        "n": 23,
+        "accuracy": 0.9565217391304348
+      },
+      "weights_ok": {
+        "n": 23,
+        "accuracy": 0.9565217391304348
+      }
+    },
+    "percent": {
+      "n": 63,
+      "count_ok": {
+        "n": 63,
+        "accuracy": 1.0
+      },
+      "lookback_value_ok": {
+        "n": 63,
+        "accuracy": 1.0
+      },
+      "ticker_set_ok": {
+        "n": 63,
+        "accuracy": 0.9682539682539683
+      },
+      "weights_ok": {
+        "n": 63,
+        "accuracy": 0.9682539682539683
+      }
+    },
+    "unweighted": {
+      "n": 14,
+      "count_ok": {
+        "n": 14,
+        "accuracy": 1.0
+      },
+      "lookback_value_ok": {
+        "n": 14,
+        "accuracy": 1.0
+      },
+      "ticker_set_ok": {
+        "n": 14,
+        "accuracy": 0.9285714285714286
+      },
+      "weights_ok": {
+        "n": 14,
+        "accuracy": 0.9285714285714286
+      }
+    }
+  },
+  "mismatches": [
+    {
+      "query_id": "81",
+      "outcome": "ok",
+      "phrasing": "percent",
+      "count_ok": true,
+      "lookback_value_ok": true,
+      "lookback_stated_ok": true,
+      "ticker_set_ok": false,
+      "weights_ok": false,
+      "weight_max_abs_error": 0.26,
+      "weight_l1_error": 0.52,
+      "weights_expected": {
+        "MA": 0.26,
+        "PFE": 0.13,
+        "AMD": 0.61
+      },
+      "weights_got": {
+        "AAPL": 0.26,
+        "PFE": 0.13,
+        "AMD": 0.61
+      },
+      "n_holdings_expected": 3,
+      "n_holdings_got": 3,
+      "tickers_expected": [
+        "AMD",
+        "MA",
+        "PFE"
+      ],
+      "tickers_got": [
+        "AAPL",
+        "AMD",
+        "PFE"
+      ]
+    },
+    {
+      "query_id": "91",
+      "outcome": "ok",
+      "phrasing": "equal",
+      "count_ok": true,
+      "lookback_value_ok": true,
+      "lookback_stated_ok": true,
+      "ticker_set_ok": false,
+      "weights_ok": false,
+      "weight_max_abs_error": 0.16666666666666666,
+      "weight_l1_error": 0.3333333333333333,
+      "weights_expected": {
+        "ADBE": 0.16666666666666666,
+        "CRM": 0.16666666666666666,
+        "DIS": 0.16666666666666666,
+        "NVDA": 0.16666666666666666,
+        "JNJ": 0.16666666666666666,
+        "TSLA": 0.16666666666666666
+      },
+      "weights_got": {
+        "AAPL": 0.16666666666666666,
+        "ADBE": 0.16666666666666666,
+        "DIS": 0.16666666666666666,
+        "JNJ": 0.16666666666666666,
+        "NVDA": 0.16666666666666666,
+        "TSLA": 0.16666666666666666
+      },
+      "n_holdings_expected": 6,
+      "n_holdings_got": 6,
+      "tickers_expected": [
+        "ADBE",
+        "CRM",
+        "DIS",
+        "JNJ",
+        "NVDA",
+        "TSLA"
+      ],
+      "tickers_got": [
+        "AAPL",
+        "ADBE",
+        "DIS",
+        "JNJ",
+        "NVDA",
+        "TSLA"
+      ]
+    },
+    {
+      "query_id": "97",
+      "outcome": "failed",
+      "phrasing": "percent",
+      "count_ok": true,
+      "lookback_value_ok": true,
+      "lookback_stated_ok": true,
+      "ticker_set_ok": false,
+      "weights_ok": false,
+      "weight_max_abs_error": 0.14,
+      "weight_l1_error": 0.28,
+      "weights_expected": {
+        "MA": 0.13,
+        "JPM": 0.28,
+        "CRM": 0.14,
+        "DIS": 0.31,
+        "V": 0.14
+      },
+      "weights_got": {
+        "DIS": 0.31,
+        "JPM": 0.28,
+        "MA": 0.13,
+        "SFM": 0.14,
+        "V": 0.14
+      },
+      "n_holdings_expected": 5,
+      "n_holdings_got": 5,
+      "tickers_expected": [
+        "CRM",
+        "DIS",
+        "JPM",
+        "MA",
+        "V"
+      ],
+      "tickers_got": [
+        "DIS",
+        "JPM",
+        "MA",
+        "SFM",
+        "V"
+      ]
+    },
+    {
+      "query_id": "95",
+      "outcome": "failed",
+      "phrasing": "unweighted",
+      "count_ok": true,
+      "lookback_value_ok": true,
+      "lookback_stated_ok": true,
+      "ticker_set_ok": false,
+      "weights_ok": false,
+      "weight_max_abs_error": 0.2,
+      "weight_l1_error": 0.4,
+      "weights_expected": {
+        "MA": 0.2,
+        "JNJ": 0.2,
+        "AMZN": 0.2,
+        "KO": 0.2,
+        "PFE": 0.2
+      },
+      "weights_got": {
+        "MCD": 0.2,
+        "JNJ": 0.2,
+        "AMZN": 0.2,
+        "KO": 0.2,
+        "PFE": 0.2
+      },
+      "n_holdings_expected": 5,
+      "n_holdings_got": 5,
+      "tickers_expected": [
+        "AMZN",
+        "JNJ",
+        "KO",
+        "MA",
+        "PFE"
+      ],
+      "tickers_got": [
+        "AMZN",
+        "JNJ",
+        "KO",
+        "MCD",
+        "PFE"
+      ]
+    }
+  ]
+}

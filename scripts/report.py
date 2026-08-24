@@ -66,17 +66,59 @@ def is_warmup(qid) -> bool:
     return isinstance(qid, str) and qid.startswith("warmup-")
 
 
+RATE_FILE = os.path.join(ROOT, "data", "rate.json")
+
+
+def _load_rate() -> dict:
+    if not os.path.exists(RATE_FILE):
+        return {}
+    try:
+        with open(RATE_FILE, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _check_rate(a) -> None:
+    """A cost report with no cited rate is not a cost report.
+
+    Fails closed rather than defaulting, because the failure this replaces was
+    silent: a placeholder rate produced perfectly plausible dollar figures that
+    disagreed with every published number, and nothing in the output said so.
+    """
+    if a.usd_per_gpu_hour is None or a.rate_source is None:
+        raise SystemExit(
+            f"no GPU rate available.\n{RATE_FILE} is missing or unreadable, "
+            f"and --usd-per-gpu-hour / --rate-source were not given.\n"
+            f"Every dollar figure in this repository is one multiplication "
+            f"from that rate, so it is required, not defaulted.")
+    if "PLACEHOLDER" in str(a.rate_source).upper():
+        raise SystemExit(
+            f"rate_source is a placeholder ({a.rate_source!r}).\n"
+            f"Refusing to write dollar figures with no citation behind them.")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("run_dir")
-    ap.add_argument("--usd-per-gpu-hour", type=float, default=1.60)
-    ap.add_argument("--rate-source", default="PLACEHOLDER -- cite a real rate")
-    ap.add_argument("--n-gpus", type=int, default=1)
+    # Defaults come from data/rate.json, not from a literal here.
+    #
+    # They used to be 1.60 and "PLACEHOLDER -- cite a real rate", and nothing
+    # in `make report` or `./run.sh report` overrode them -- so the documented
+    # reproduction command wrote cost figures 15% above the published table and
+    # stamped them with a placeholder citation. Every dollar number in this
+    # repository now comes from one file that can be read, diffed and cited.
+    _rate = _load_rate()
+    ap.add_argument("--usd-per-gpu-hour", type=float,
+                    default=_rate.get("usd_per_gpu_hour"))
+    ap.add_argument("--rate-source", default=_rate.get("source"))
+    ap.add_argument("--n-gpus", type=int, default=_rate.get("n_gpus", 1))
     ap.add_argument("--weights-from", default=None,
                     help="another run dir whose C=1 calls should supply the "
                          "token weights; strongly preferred over fitting on a "
                          "concurrent run")
     a = ap.parse_args()
+    _check_rate(a)
 
     d = a.run_dir
     manifest = json.load(open(os.path.join(d, "manifest.json"), encoding="utf-8"))
