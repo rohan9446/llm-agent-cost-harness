@@ -7,9 +7,9 @@ measured it and the two optimizations that came out of the measurement.
 ```
                  cost/query    q/s    workflow    ticker    briefing   invented
                               (C=8)   failures    accuracy   topics     figures
-  B0  baseline    $0.000117   3.30      3.4%        95.3%     99.8%      6.6%
-  A1  cascade     $0.000081   4.77      0.0%       100.0%     99.9%      6.8%   -30.8%
-  A2  + brevity   $0.000069   5.57      0.0%       100.0%     99.3%      2.6%   -41.0%
+  B0  baseline    $0.000113   3.30      3.4%        95.3%     99.8%      6.6%
+  A1  cascade     $0.000081   4.77      0.0%       100.0%     99.9%      6.8%   -28.4%
+  A2  + brevity   $0.000069   5.57      0.0%       100.0%     99.3%      2.6%   -38.7%
 ```
 
 1,000 queries per run, single A100 80GB PCIe, rental-equivalent rate cited
@@ -17,15 +17,22 @@ below. **Cheaper and more correct at the same time** — which is not the usual
 shape of a cost optimization, and is the reason the quality gates matter more
 than the cost numbers.
 
-Two notes on how to read that table, both of which changed after an audit:
+Two notes on how to read that table:
 
-**Cost is per SUCCESSFUL query.** An earlier version of this table divided by
-attempted queries, which quietly flattered the baseline: B0 fails 3.4% of the
-workload, and charging its GPU time against queries that produced no answer
-priced work nobody received. The denominator is `n_ok`, matching
-`report.json`, and it moves B0 from $0.000113 to $0.000117 — so A1's saving is
-30.8%, not the 28.3% previously published here. A1 and A2 have no failures, so
-their two figures are identical and only the baseline moves.
+**Cost is per ATTEMPTED query**, and that is the conservative choice. Only B0
+has failures, so only B0's denominator is in question — A1 and A2 answer
+everything and their two figures are identical. Dividing B0's GPU time by its
+966 successes instead of its 1,000 attempts raises its cost to $0.000117 and
+*enlarges* every saving in the table (A1 becomes 30.8% rather than 28.4%).
+
+I published that larger figure for about an hour. It is defensible — you did
+pay for answers you did not get — but I reached it by picking the denominator
+that made my own result look better, having just written three paragraphs
+elsewhere in this repository about not doing that. The failure rate already
+has its own column; putting it in the cost as well counts it twice and turns
+"cheaper **and** more correct" into one fact reported as two. Per-attempted
+makes the claim harder to support, so per-attempted is the headline.
+`report.json` carries both, with `_headline_denominator` naming which is which.
 
 **"Invented figures" is the share of briefings containing at least one number
 the workflow never computed.** A2 asks the model to write less and it invents
@@ -313,6 +320,23 @@ weaker than the claims. They are now enforced in code, and
 | `LLM_MAX_RETRIES` was really an attempt count | `LLM_MAX_ATTEMPTS`, old name still read |
 | the pre-commit audit checked **filenames** | it now reads the corpus and looks for its words in the bytes being committed |
 | quality scores did not record **what scored them** | `_scorer_sha256` in every `advisor_eval.json`, and a gate that refuses to compare two arms scored by different versions |
+| Tier 1 **dropped an unknown company in first position** | holdings position is decided by punctuation, not by where the capital letter falls |
+| `run.sh report` fell back to the newest run of **any** stage | no fallback: a stage/concurrency with no matching run is an error |
+| `eval_cascade.py` exited 0 on **lookback** disagreements | both kinds of disagreement fail the gate |
+| `--weights-from` silently ignored a missing calibration | fails closed, and checks model, snapshot, APC, GPUs and C=1 |
+| the robustness scorer always exited 0 | pinned budget: 1 false accept, 0 false declines |
+| the live-argv check named five flags, claimed "every setting" | full recorded argv compared flag by flag |
+| parser scoring sat in `except: print(...)` | `parser_quality_scored` — the accuracy is reported, its absence is gated |
+| `data/vocab.json` set derived accuracy but was pinned nowhere | `_vocab_sha256` and `_scorer_sha256` in `parser_eval.json` |
+
+The first row there is the one worth reading twice. `Rivian, AAPL and MSFT`
+returned `{AAPL: 0.5, MSFT: 0.5}` — the unrecognised company dropped and the
+remainder silently re-weighted into a portfolio nobody asked for. That is the
+exact failure A1 was built to eliminate, sitting in the one position the guard
+did not look, because the sentence-initial exemption was written for
+`Assess the risk.` and then applied to every shape. Tier-1 coverage is
+unchanged at 1000/1000, so no published number moves; the routing is simply
+correct now where it was confidently wrong before.
 
 ### The scorer was the last thing measuring itself
 

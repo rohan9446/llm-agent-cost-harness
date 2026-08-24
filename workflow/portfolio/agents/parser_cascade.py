@@ -355,6 +355,70 @@ def _sentence_initial(text: str, i: int) -> bool:
     return j < 0 or text[j] in ".!?:;"
 
 
+_LIST_TAIL = re.compile(r"\s*(?:and|&|plus)\s+", re.I)
+_PCT_HEAD = re.compile(r"\d+(?:\.\d+)?\s*%")
+_PCT_AFTER = re.compile(r"\s+\d+(?:\.\d+)?\s*%")
+_CONNECTIVE = re.compile(r"\s*(?:in|of|to)?\s*", re.I)
+
+
+def _in_holdings_list(query: str, s: int, e: int,
+                      spans: list[tuple[int, int, str]]) -> bool:
+    """Does this token sit where a HOLDING sits, whatever its position?
+
+    The sentence-initial exemption below is a grammar rule, and grammar is not
+    the only thing that puts a capital letter at the start of a clause. A
+    company name does too:
+
+        Rivian, AAPL and MSFT over the last month
+        Portfolio: Rivian, AAPL and MSFT
+
+    Both were accepted as {AAPL: 0.5, MSFT: 0.5} -- the unknown company
+    dropped, the rest silently re-weighted to a portfolio nobody asked about.
+    That is the precise failure A1 exists to prevent, and it survived because
+    the exemption was written for one shape ("Assess the risk.") and applied to
+    every shape.
+
+    The signal is structural, not lexical -- no word list to fall out of date.
+    A token is in holdings position when it is punctuated like a holding:
+    followed by a list comma, joined by "and" to a recognised holding or a
+    percentage, or adjacent to a percentage on either side.
+    """
+    tail = query[e:]
+
+    # 1. a list comma directly after it: "Rivian, AAPL and MSFT"
+    if tail[:1] == ",":
+        return True
+
+    # 2. joined by "and" to a recognised holding or to a percentage:
+    #    "Snowflake and AAPL", "Snowflake and 40% AAPL"
+    m = _LIST_TAIL.match(tail)
+    if m:
+        nxt = e + m.end()
+        if any(cs == nxt for cs, _ce, _t in spans):
+            return True
+        if _PCT_HEAD.match(query[nxt:]):
+            return True
+
+    # 3. a percentage immediately after it -- but ONLY when that percentage
+    #    does not belong to the holding that follows.
+    #
+    #    This distinction is the whole rule. "Rivian 40% and AAPL 60%" puts the
+    #    percentage AFTER its holding, so Rivian is in holdings position. But
+    #    "Evaluate 100% CRM" puts it BEFORE, and the percentage binds forward
+    #    to CRM -- the leading word is a verb, not a company. Without the
+    #    lookahead this fired on 44 of the 1,000 corpus queries, every one of
+    #    them an instruction verb, and took Tier-1 coverage from 100% to 95.6%.
+    pm = _PCT_AFTER.match(tail)
+    if pm:
+        after = e + pm.end()
+        skip = _CONNECTIVE.match(query[after:])
+        pos = after + (skip.end() if skip else 0)
+        if not any(cs == pos for cs, _ce, _t in spans):
+            return True
+
+    return False
+
+
 def unknown_entity_evidence(query: str, spans: list[tuple[int, int, str]],
                             index: "NameIndex") -> str | None:
     """A token suggesting a holding Tier 1 cannot resolve, or None."""
@@ -366,7 +430,11 @@ def unknown_entity_evidence(query: str, spans: list[tuple[int, int, str]],
         tok = m.group(0).strip(".")
         if not tok or tok in _SAFE_CAPS:
             continue
-        if _sentence_initial(query, s):
+        # Sentence-initial capitalisation is usually grammar -- unless the
+        # token is punctuated like a holding, in which case position tells us
+        # nothing and the name does. Declining costs one LLM call; accepting
+        # costs a wrong portfolio delivered confidently.
+        if _sentence_initial(query, s) and not _in_holdings_list(query, s, e, spans):
             continue
         # An all-caps token outside the universe is an unpriceable symbol --
         # exactly the GOOG-for-GOOGL case, and worth declining on.

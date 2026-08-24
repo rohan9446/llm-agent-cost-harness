@@ -263,6 +263,7 @@ def check_run(
     failures: list[dict],
     advisor: dict[str, Any] | None = None,
     advisor_reference: dict[str, Any] | None = None,
+    parser: dict[str, Any] | None = None,
 ) -> list[Check]:
     """Every check that decides whether this run is reportable."""
     checks: list[Check] = []
@@ -488,6 +489,35 @@ def check_run(
         f"git_sha={(manifest.env or {}).get('git_sha')} "
         f"git_dirty={(manifest.env or {}).get('git_dirty')}",
     ))
+
+    # 9c. parser correctness was MEASURED. Not that it was high -- that it
+    #     exists, and that it covers the workload that ran.
+    #
+    #     The accuracy itself is deliberately not a threshold: B0's error rate
+    #     is the finding this project is built to report, and gating on it
+    #     would mean never having a baseline. But the scoring used to sit
+    #     inside `except Exception: print(...)`, so a run could report cost
+    #     down, failures zero, validity PASS, and no parser_eval.json at all --
+    #     and the stage where that matters most is A1, whose entire claim is
+    #     that a deterministic parser did not trade accuracy for speed.
+    attempted_all = n_ok + len(failures)
+    p_scored = int((parser or {}).get("n_scored", 0))
+    checks.append(Check(
+        "parser_quality_scored",
+        bool(parser) and p_scored >= n_ok,
+        f"parser_eval covers {p_scored} of {attempted_all} attempted queries "
+        f"(need >= {n_ok} successful) -- the accuracy is reported, not gated; "
+        f"its ABSENCE is what is gated here",
+    ))
+    if parser:
+        checks.append(Check(
+            "parser_scorer_pinned",
+            bool(parser.get("_vocab_sha256")) and bool(parser.get("_scorer_sha256")),
+            f"vocab {(parser.get('_vocab_sha256') or 'UNPINNED')[:12]} "
+            f"scorer {(parser.get('_scorer_sha256') or 'UNPINNED')[:12]} -- "
+            f"derived accuracy is a property of the alias map and the scorer, "
+            f"and neither was recorded anywhere before",
+        ))
 
     # 10. A2's quality gates, as gates.
     #

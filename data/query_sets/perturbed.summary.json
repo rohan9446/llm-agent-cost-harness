@@ -20,5 +20,57 @@
     "F": 4,
     "G": 15
   },
-  "local_copy": "data/query_sets/perturbed.local.json (gitignored)"
+  "local_copy": "data/query_sets/perturbed.local.json (gitignored)",
+  "scores": {
+    "_what": "routing safety, not coverage. A false ACCEPT is Tier 1 answering a query it should have handed to the model -- its cost is a wrong answer delivered confidently, and it is unbounded. A false DECLINE costs one LLM call and degrades to the B0 path. The asymmetry is why these are reported separately rather than as one accuracy.",
+    "false_accepts": 1,
+    "false_accept_rate": 0.01098901098901099,
+    "false_declines": 0,
+    "false_decline_rate": 0.0,
+    "by_group": {
+      "A": {
+        "n": 40,
+        "fa": 0,
+        "fd": 0,
+        "ok": 40
+      },
+      "B": {
+        "n": 15,
+        "fa": 0,
+        "fd": 0,
+        "ok": 15
+      },
+      "C": {
+        "n": 10,
+        "fa": 0,
+        "fd": 0,
+        "ok": 10
+      },
+      "D": {
+        "n": 3,
+        "fa": 1,
+        "fd": 0,
+        "ok": 2
+      },
+      "E": {
+        "n": 4,
+        "fa": 0,
+        "fd": 0,
+        "ok": 4
+      },
+      "F": {
+        "n": 4,
+        "fa": 0,
+        "fd": 0,
+        "ok": 4
+      },
+      "G": {
+        "n": 15,
+        "fa": 0,
+        "fd": 0,
+        "ok": 15
+      }
+    }
+  },
+  "_inputs": "not published -- group G is verbatim corpus text and groups A and B keep corpus sentence structure with entities substituted. Rebuild with: python scripts/perturbed_set.py --build"
 }

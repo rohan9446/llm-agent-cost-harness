@@ -561,23 +561,31 @@ def main() -> int:
         print(f"parser   tier1 {t1}/{tot} ({100*t1/max(1,tot):.1f}% no model call)"
               f"  tier2 {t2}  {pstats.get('tier2_reasons') or ''}")
 
-    # ---- FIX 8: parser correctness, reported not gated ---------------------
-    try:
-        from agentops import parser_eval
-        vocab = parser_eval.load_vocab(os.path.join(ROOT, "data", "vocab.json"))
-        pscore = parser_eval.score(results, vocab, failures=failures)
-        with open(os.path.join(out_dir, "parser_eval.json"), "w", encoding="utf-8") as fh:
-            json.dump(pscore, fh, indent=2, default=str)
-        sh, dv = pscore["shipped"], pscore["derived"]
-        print(f"parser   holding-count {_p(sh['holding_count'])}  "
-              f"lookback {_p(sh['lookback_value'])}  "
-              f"ticker-set {_p(dv['ticker_set'])} (derived)")
-        if pscore["n_failed_scored"]:
-            print(f"         (includes {pscore['n_failed_scored']} failed "
-                  f"quer{'y' if pscore['n_failed_scored'] == 1 else 'ies'} "
-                  f"-- scored over attempted, not successful)")
-    except Exception as exc:  # noqa: BLE001 - scoring must not void a good run
-        print(f"parser scoring failed: {exc}")
+    # ---- parser correctness: the SCORE is gated, the ACCURACY is not -------
+    #
+    # These are different claims and the old try/except collapsed them. Parser
+    # accuracy must not be a pass/fail threshold -- B0's error rate is the
+    # finding, and a gate on it would mean never having a baseline. But the
+    # EXISTENCE of the measurement has to be required, because the run this
+    # protects is exactly the one where you most need it: A1 could report cost
+    # down, failures zero, parser_eval missing, validity PASS -- a deterministic
+    # parser that bought its saving by becoming wrong, with the artifact that
+    # would have shown it silently absent.
+    from agentops import parser_eval
+    vocab_path = os.path.join(ROOT, "data", "vocab.json")
+    vocab = parser_eval.load_vocab(vocab_path)
+    pscore = parser_eval.score(results, vocab, failures=failures,
+                               vocab_path=vocab_path)
+    with open(os.path.join(out_dir, "parser_eval.json"), "w", encoding="utf-8") as fh:
+        json.dump(pscore, fh, indent=2, default=str)
+    sh, dv = pscore["shipped"], pscore["derived"]
+    print(f"parser   holding-count {_p(sh['holding_count'])}  "
+          f"lookback {_p(sh['lookback_value'])}  "
+          f"ticker-set {_p(dv['ticker_set'])} (derived)")
+    if pscore["n_failed_scored"]:
+        print(f"         (includes {pscore['n_failed_scored']} failed "
+              f"quer{'y' if pscore['n_failed_scored'] == 1 else 'ies'} "
+              f"-- scored over attempted, not successful)")
 
     # ---- advisor quality: SCORED, and for A2 arms, GATED ------------------
     #
@@ -608,7 +616,7 @@ def main() -> int:
 
     checks = validity.check_run(
         manifest, {**counter, "parser_tiers": pstats}, results, failures,
-        advisor=aq, advisor_reference=aref)
+        advisor=aq, advisor_reference=aref, parser=pscore)
     with open(os.path.join(out_dir, "validity.json"), "w", encoding="utf-8") as fh:
         json.dump([c.__dict__ for c in checks], fh, indent=2)
 

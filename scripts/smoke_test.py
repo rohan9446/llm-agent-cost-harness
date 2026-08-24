@@ -347,8 +347,40 @@ def main() -> int:
           "reporting a topic or grounding verdict computed from two different "
           "rulers is worse than reporting none")
 
+    # ---- the argv check must be exhaustive, not a handpicked list ---------
+    from agentops.preflight import _argv_agrees as _aa
+    _rec = {"model": "M", "prefix_caching": "off", "dtype": "bfloat16",
+            "tensor_parallel_size": 1, "port": 8000,
+            "argv": ["vllm", "serve", "M", "--dtype", "bfloat16",
+                     "--tensor-parallel-size", "1", "--port", "8000",
+                     "--no-enable-prefix-caching", "--max-model-len", "4096",
+                     "--gpu-memory-utilization", "0.90", "--seed", "1337"]}
+    check("argv check accepts an identical live process",
+          _aa(list(_rec["argv"]), _rec)[0])
+    for _flag, _old, _new in (("--max-model-len", "4096", "8192"),
+                              ("--gpu-memory-utilization", "0.90", "0.95"),
+                              ("--seed", "1337", "7")):
+        _live = [x if x != _old else _new for x in _rec["argv"]]
+        check(f"argv check catches drifted {_flag}",
+              not _aa(_live, _rec)[0],
+              "the named-flag list checked five settings while the docstring "
+              "claimed it checked every one")
+    check("argv check catches a flag added to the live process",
+          not _aa(_rec["argv"] + ["--enforce-eager"], _rec)[0])
+
     pe_path = os.path.join(run_dir, "parser_eval.json")
     check("parser correctness scored", os.path.exists(pe_path))
+    if os.path.exists(pe_path):
+        _pe = json.load(open(pe_path, encoding="utf-8"))
+        check("parser scorer and vocab are pinned",
+              len(_pe.get("_scorer_sha256") or "") == 64
+              and len(_pe.get("_vocab_sha256") or "") == 64,
+              "derived accuracy is a property of the alias map and the scorer")
+    _vchecks = {c["name"] for c in checks}
+    check("parser scoring is a validity check, not a print statement",
+          "parser_quality_scored" in _vchecks,
+          "scoring wrapped in try/except let a run report cost down, failures "
+          "zero and validity PASS with no accuracy artifact at all")
     if os.path.exists(pe_path):
         pe = json.load(open(pe_path, encoding="utf-8"))
         check("parser weights scored",
@@ -547,6 +579,35 @@ def main() -> int:
               parse_holdings(_bad, _idx) is None,
               "substring matching without word boundaries invents holdings "
               "in sentences nobody wrote")
+    # ---- unknown company at the START of a clause -------------------------
+    #
+    # The most dangerous bug found in this project, and it survived three
+    # audits. unknown_entity_evidence() skipped every sentence-initial capital
+    # as grammar, so an unrecognised company in first position was invisible
+    # and the remaining holdings were silently re-weighted into a portfolio
+    # nobody asked for. Exactly what A1 exists to prevent, in the one position
+    # the guard did not look.
+    for _q in ("Rivian, Visa and Pfizer over the last month",
+               "Snowflake and Visa over the last year",
+               "Portfolio: Rivian, Visa and Pfizer over the last month",
+               "RIVN, Visa and Pfizer over the last month",
+               "Rivian 40% and Visa 60% over the last month",
+               "Snowflake and 40% Visa over the last year"):
+        check(f"cascade declines a clause-initial unknown: {_q.split(',')[0][:26]}",
+              parse_holdings(_q, _idx) is None,
+              "dropping the unknown name and re-weighting the rest is a wrong "
+              "portfolio delivered confidently")
+    # ...without turning every leading verb into a holding. This is the half
+    # that broke first: a percentage AFTER a leading word binds FORWARD to the
+    # holding that follows it, and reading it backwards declined 44 of the
+    # 1,000 corpus queries and took Tier-1 coverage from 100% to 95.6%.
+    check("a leading verb before a percentage is not a holding",
+          parse_holdings("Evaluate 100% Visa over the last 6 months.", _idx)
+          == {"V": 1.0},
+          "'Evaluate 100% Visa' -- the 100% belongs to Visa, not to Evaluate")
+    check("a recognised holding in first position still resolves",
+          parse_holdings("Visa and Pfizer over the last month", _idx) is not None)
+
     check("cascade still matches a closed-up multiword name",
           (parse_holdings("Split it 40% JPMorgan and 60% Visa.", _idx)
            or {}).get("JPM") == 0.40,

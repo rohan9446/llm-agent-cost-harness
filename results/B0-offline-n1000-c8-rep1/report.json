@@ -25,13 +25,11 @@
       {
         "query_id": "75",
         "error": "ParseError: no JSON object in model output for '<redacted>': '<redacted>'",
-        "query_redacted": true,
         "parsed_holdings": []
       },
       {
         "query_id": "81",
         "error": "PipelineError: SnapshotMiss: T is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "PFE",
           "AMD",
@@ -41,7 +39,6 @@
       {
         "query_id": "95",
         "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "MCD",
           "JNJ",
@@ -53,7 +50,6 @@
       {
         "query_id": "97",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "DIS",
           "JPM",
@@ -65,7 +61,6 @@
       {
         "query_id": "106",
         "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "MSFT",
           "MCD",
@@ -77,7 +72,6 @@
       {
         "query_id": "115",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "CVX",
           "ORCL",
@@ -88,7 +82,6 @@
       {
         "query_id": "148",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "AMD",
           "SFM",
@@ -99,7 +92,6 @@
       {
         "query_id": "184",
         "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "MCD",
           "INTC",
@@ -110,13 +102,11 @@
       {
         "query_id": "192",
         "error": "ParseError: no JSON object in model output for '<redacted>': '<redacted>'",
-        "query_redacted": true,
         "parsed_holdings": []
       },
       {
         "query_id": "255",
         "error": "PipelineError: SnapshotMiss: GOOG is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "KO",
           "ORCL",
@@ -129,13 +119,11 @@
       {
         "query_id": "272",
         "error": "ParseError: no JSON object in model output for '<redacted>': '<redacted>'",
-        "query_redacted": true,
         "parsed_holdings": []
       },
       {
         "query_id": "280",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "SFM",
           "DIS",
@@ -145,7 +133,6 @@
       {
         "query_id": "281",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "META",
           "SFM",
@@ -155,7 +142,6 @@
       {
         "query_id": "314",
         "error": "PipelineError: SnapshotMiss: BABA is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "AAPL",
           "BABA",
@@ -168,7 +154,6 @@
       {
         "query_id": "340",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "JNJ",
           "ADBE",
@@ -181,7 +166,6 @@
       {
         "query_id": "344",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "AMZN",
           "JNJ",
@@ -192,7 +176,6 @@
       {
         "query_id": "394",
         "error": "PipelineError: SnapshotMiss: SQ is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "TSLA",
           "CVX",
@@ -205,7 +188,6 @@
       {
         "query_id": "395",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "UNH",
           "NVDA",
@@ -215,7 +197,6 @@
       {
         "query_id": "408",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "QCOM",
           "NFLX",
@@ -225,7 +206,6 @@
       {
         "query_id": "424",
         "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
-        "query_redacted": true,
         "parsed_holdings": [
           "DIS",
           "SFM",
@@ -239,23 +219,25 @@
     "wall_s": 293.0720322318375,
     "n_queries": 966,
     "n_gpus": 1,
-    "usd_per_gpu_hour": 1.39,
-    "rate_source": "RunPod A100 PCIe 80GB, 2026-08-22",
-    "total_usd": 0.11315836800062615,
-    "cost_per_query_usd": 0.00011714116770251154,
+    "usd_per_gpu_hour": 1.6,
+    "rate_source": "PLACEHOLDER -- cite a real rate",
+    "total_usd": 0.13025423654748333,
+    "cost_per_query_usd": 0.00013483875418994135,
     "basis": "allocated GPU time x rental-equivalent rate",
     "n_attempted": 1000,
-    "cost_per_attempted_query_usd": 0.00011315836800062615,
+    "cost_per_attempted_query_usd": 0.00013025423654748332,
+    "_headline_denominator": "attempted",
     "_attempted_note": "failed queries consumed GPU time too; dividing only by successes understates cost per query. Per-attempted is the headline figure: a system that answers 97 of 100 queries has not become cheaper by discarding the 3",
+    "_denominator_choice": "Both are reported and they disagree only for B0, which is the only stage with failures -- A1 and A2 answer everything, so their two figures are identical. That asymmetry is exactly why the choice needs stating rather than assuming: per-SUCCESSFUL raises B0'<redacted>'cheaper AND more correct' into one fact wearing two hats.",
     "per_query_distribution_usd": {
       "n": 1000,
-      "mean": 0.00011315836800062614,
-      "p50": 0.00011478102246825043,
-      "p90": 0.00013949943016303186,
-      "p95": 0.00014717682140182606,
-      "p99": 0.00016264120585582974,
-      "min": 1.527469874555358e-05,
-      "max": 0.00017826021357365262
+      "mean": 0.00013025423654748332,
+      "p50": 0.0001321220402512235,
+      "p90": 0.0001605748836409,
+      "p95": 0.00016941216852008756,
+      "p99": 0.00018721289882685439,
+      "min": 1.758238704524153e-05,
+      "max": 0.0002051916127466505
     },
     "note": "total is measured; per-query is the total split by fitted token weight, never a per-request latency multiplication"
   },
@@ -278,8 +260,8 @@
       "calls": 966,
       "pct_of_llm_cost": 71.96142086867965,
       "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
-      "attributed_usd": 0.0814303694450599,
-      "usd_per_query": 8.429644870089016e-05,
+      "attributed_usd": 0.09373279936122002,
+      "usd_per_query": 9.70318833967081e-05,
       "prompt_tokens": 247912,
       "completion_tokens": 122866,
       "cached_tokens": 0
@@ -289,8 +271,8 @@
       "calls": 1000,
       "pct_of_llm_cost": 28.038579131320347,
       "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
-      "attributed_usd": 0.031727998555566246,
-      "usd_per_query": 3.284471900162137e-05,
+      "attributed_usd": 0.0365214371862633,
+      "usd_per_query": 3.780687079323323e-05,
       "prompt_tokens": 299713,
       "completion_tokens": 46234,
       "cached_tokens": 0

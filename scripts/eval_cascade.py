@@ -142,7 +142,24 @@ def main() -> int:
           f"{100*len(resolved)/n:.0f}% of parser calls at no accuracy cost.")
     print("If coverage is high and mismatches are NOT zero, the fast path is "
           "buying speed with correctness -- stop and fix it.")
-    return 0 if not mismatched else 1
+
+    # BOTH kinds of disagreement fail this gate.
+    #
+    # It used to be `return 0 if not mismatched else 1`, which printed lookback
+    # disagreements in red and then exited 0 anyway. A wrong lookback is not a
+    # lesser error than a wrong ticker set: it silently analyses the right
+    # portfolio over the wrong window, which is the same shape of failure --
+    # plausible output, different question answered. The script called itself
+    # the correctness gate while gating half of what it measured, so 1,000
+    # lookback errors and zero holdings errors would have exited PASS.
+    failed = len(mismatched) + len(lookback_wrong)
+    if failed:
+        print(f"\nFAIL: {len(mismatched)} holdings and {len(lookback_wrong)} "
+              f"lookback disagreement(s). Do not spend GPU time on this.")
+    else:
+        print(f"\nPASS: zero holdings and zero lookback disagreements across "
+              f"{len(resolved)} resolved queries.")
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

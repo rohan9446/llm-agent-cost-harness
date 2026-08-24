@@ -109,6 +109,11 @@
       "detail": "source sha256=MISSING git_sha=None git_dirty=False"
     },
     {
+      "name": "parser_quality_scored",
+      "ok": false,
+      "detail": "parser_eval covers 0 of 1000 attempted queries (need >= 1000 successful) -- the accuracy is reported, not gated; its ABSENCE is what is gated here"
+    },
+    {
       "name": "advisor_no_truncation",
       "ok": true,
       "detail": "0 of 1000 briefings hit the token ceiling (0.00%, limit 0.00%) -- brevity must be the model choosing to write less, never the sampler cutting it off"

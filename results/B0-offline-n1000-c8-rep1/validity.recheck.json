@@ -97,6 +97,11 @@
       "name": "source_tree_pinned",
       "ok": false,
       "detail": "source sha256=MISSING git_sha=None git_dirty=False"
+    },
+    {
+      "name": "parser_quality_scored",
+      "ok": false,
+      "detail": "parser_eval covers 0 of 1000 attempted queries (need >= 966 successful) -- the accuracy is reported, not gated; its ABSENCE is what is gated here"
     }
   ]
 }

@@ -105,14 +105,58 @@ def main() -> int:
     weight_conc = manifest.get("concurrency") or 1
     note = ""
     if a.weights_from:
+        # FAILS CLOSED.
+        #
+        # This used to be `if src:` with no else, so a --weights-from pointing
+        # at a directory with no usable trace silently fell back to fitting the
+        # attribution model on the CURRENT run -- at C=8, where every measured
+        # time contains queueing delay. The command line visibly said
+        # "--weights-from some-C1-run" and the report was not using it. A
+        # dependency the caller explicitly named must not be allowed to
+        # disappear quietly; a request that cannot be honoured is an error.
         src = [r for r in jsonl(os.path.join(a.weights_from, "trace.jsonl"))
                if r.get("kind") == "llm" and not r.get("error")
                and not is_warmup(r.get("query_id"))]
-        if src:
-            m = json.load(open(os.path.join(a.weights_from, "manifest.json"),
-                               encoding="utf-8"))
-            weight_src, weight_conc = src, m.get("concurrency") or 1
-            note = f"weights fitted on {os.path.basename(a.weights_from)}"
+        if not src:
+            raise SystemExit(
+                f"--weights-from {a.weights_from} contains no usable LLM "
+                f"trace.\nAttribution weights would silently fall back to this "
+                f"run's own C={manifest.get('concurrency')} timings, which contain "
+                f"queueing delay -- exactly what calibration exists to avoid.\n"
+                f"Run the calibration first:  make calibrate  (or "
+                f"run_bench.py --concurrency 1)")
+        mpath = os.path.join(a.weights_from, "manifest.json")
+        if not os.path.exists(mpath):
+            raise SystemExit(f"--weights-from {a.weights_from} has no manifest.json")
+        with open(mpath, encoding="utf-8") as fh:
+            m = json.load(fh)
+
+        # The weights describe a SYSTEM, not just a concurrency. Fitting them
+        # on a different model, GPU, snapshot or server configuration and
+        # applying them here would attribute this run's cost using another
+        # run's physics -- and nothing in the output would say so.
+        here = manifest
+        for key, label in (("model", "model"),
+                           ("served_model", "served model"),
+                           ("snapshot_id", "price snapshot"),
+                           ("prefix_caching", "prefix caching"),
+                           ("server_devices", "GPUs")):
+            want, got = m.get(key), here.get(key)
+            if want and got and want != got:
+                raise SystemExit(
+                    f"calibration mismatch on {label}:\n"
+                    f"  {os.path.basename(a.weights_from)}: {want!r}\n"
+                    f"  {os.path.basename(d)}: {got!r}\n"
+                    f"Attribution weights fitted on one system do not describe "
+                    f"another.")
+        if (m.get("concurrency") or 1) != 1:
+            raise SystemExit(
+                f"--weights-from {os.path.basename(a.weights_from)} ran at "
+                f"C={m.get('concurrency')}, not C=1. Weights must be fitted "
+                f"where the measured times contain no queueing delay.")
+
+        weight_src, weight_conc = src, m.get("concurrency") or 1
+        note = f"weights fitted on {os.path.basename(a.weights_from)}"
     weights = cost.fit_token_weights(weight_src, concurrency=weight_conc)
     weights.note = (weights.note + " " + note).strip()
 
@@ -166,11 +210,24 @@ def main() -> int:
             "cost_per_attempted_query_usd": (
                 total.total_usd / (n_ok + len(failures))
                 if (n_ok + len(failures)) else float("nan")),
+            "_headline_denominator": "attempted",
             "_attempted_note": "failed queries consumed GPU time too; dividing "
                                "only by successes understates cost per query. "
                                "Per-attempted is the headline figure: a system "
                                "that answers 97 of 100 queries has not become "
                                "cheaper by discarding the 3",
+            "_denominator_choice": (
+                "Both are reported and they disagree only for B0, which is the "
+                "only stage with failures -- A1 and A2 answer everything, so "
+                "their two figures are identical. That asymmetry is exactly why "
+                "the choice needs stating rather than assuming: per-SUCCESSFUL "
+                "raises B0's cost and therefore ENLARGES the improvement this "
+                "project is claiming (28.4% -> 30.8% for A1). Per-attempted is "
+                "the headline because it is the denominator that makes the "
+                "claim harder to support, and because the failure rate is "
+                "already reported as its own column -- folding it into the cost "
+                "as well would count it twice and turn 'cheaper AND more "
+                "correct' into one fact wearing two hats."),
             "per_query_distribution_usd": dist(list(per_query_cost.values())),
             "note": "total is measured; per-query is the total split by fitted "
                     "token weight, never a per-request latency multiplication",

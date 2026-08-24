@@ -23,6 +23,7 @@ a real error rate is itself a useful number, and A1 exists to move it.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -31,6 +32,36 @@ from typing import Any
 def load_vocab(path: str) -> dict[str, Any]:
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def vocab_sha256(path: str) -> str:
+    """Checksum of the alias map the derived labels are built from.
+
+    data/vocab.json IS the ruler for derived ticker and weight accuracy, in the
+    same way advisor_eval.py is the ruler for briefing quality. It was not
+    pinned anywhere: source_tree_sha256 hashes .py and .sh files only, so the
+    alias map could be edited and the scorer re-run with every code hash in the
+    manifest unchanged, and the reported accuracy would move with nothing in
+    the artifact to show why.
+
+    A1's name table is pinned for exactly this reason -- it decides what the
+    PARSER resolves. This pins what the SCORER expects. Both halves of
+    "100% ticker accuracy" now name the tables that produced it.
+    """
+    try:
+        with open(path, "rb") as fh:
+            return hashlib.sha256(fh.read()).hexdigest()
+    except OSError:
+        return ""
+
+
+def scorer_sha256() -> str:
+    """Checksum of this module, for the same reason advisor_eval has one."""
+    try:
+        with open(os.path.abspath(__file__), "rb") as fh:
+            return hashlib.sha256(fh.read()).hexdigest()
+    except OSError:
+        return ""
 
 
 # NO TEMPLATE LIST.
@@ -190,7 +221,8 @@ def _p95(xs: list[float]) -> float | None:
 
 
 def score(results: list[dict], vocab: dict[str, Any],
-          failures: list[dict] | None = None) -> dict[str, Any]:
+          failures: list[dict] | None = None,
+          vocab_path: str = "") -> dict[str, Any]:
     """Per-query parser scoring, aggregated and split by phrasing class.
 
     `failures` matters more than it looks. A query can fail *because* the
@@ -276,6 +308,12 @@ def score(results: list[dict], vocab: dict[str, Any],
         "_note": "shipped labels are Canyon Code's; derived labels come from "
                  "our own alias map, which covers this corpus by construction "
                  "and proves nothing about generalization",
+        "_scorer_sha256": scorer_sha256(),
+        "_vocab_sha256": vocab_sha256(vocab_path) if vocab_path else "",
+        "_ruler_note": ("derived ticker and weight accuracy is a property of "
+                        "this alias map and this scorer; both are hashed so "
+                        "two parser_eval.json files can be compared only when "
+                        "they were produced by the same ruler"),
         "n_scored": len(rows),
         "n_failed_scored": n_failed_scored,
         "_failed_note": (

@@ -165,8 +165,13 @@ def _argv_agrees(argv: list[str], record: dict) -> tuple[bool, str]:
     """Does the live command line carry the configuration we claim to be testing?
 
     Checking only that the model name appears would miss the case that matters
-    most: same model, same port, prefix caching left on. Every setting that
-    changes what is being measured is checked against the live process.
+    most: same model, same port, prefix caching left on.
+
+    Two passes. The named checks below produce readable messages for the
+    settings that most often break a comparison; then the FULL recorded argv is
+    compared flag by flag, so a setting nobody thought to name cannot drift
+    unnoticed. The second pass is what makes the docstring true -- it used to
+    say "every setting" while checking five.
     """
     line = " ".join(argv)
     problems = []
@@ -197,8 +202,76 @@ def _argv_agrees(argv: list[str], record: dict) -> tuple[bool, str]:
         if str(got) != str(want):
             problems.append(f"{flag} is {got!r} live but {want!r} in the record")
 
-    return (not problems), ("live process matches the record"
+    # ---- and then EVERYTHING ELSE ------------------------------------------
+    #
+    # The named checks above give good error messages for the settings that
+    # break a comparison most often. They are not the whole configuration, and
+    # the docstring above used to claim they were. serve_vllm.sh launches with
+    # --max-model-len, --gpu-memory-utilization, --seed and a request-logging
+    # flag, none of which were compared: the live server could have had a
+    # different KV-cache budget or a different seed than the record claims and
+    # this function would have returned "matches the record".
+    #
+    # The record already stores the full launch argv, and exec replaces the
+    # shell, so the live cmdline should be byte-identical to it. Comparing the
+    # whole thing needs no list to maintain and cannot fall behind a new flag
+    # someone adds to the launch script -- which is how the handpicked list got
+    # out of date in the first place.
+    recorded = record.get("argv")
+    if recorded:
+        want_flags = _flag_map(list(recorded))
+        got_flags = _flag_map(list(argv))
+        for k in sorted(set(want_flags) | set(got_flags)):
+            if k in _ARGV_IGNORED:
+                continue
+            w, g = want_flags.get(k), got_flags.get(k)
+            if w == g:
+                continue
+            if w is None:
+                problems.append(f"{k} present live ({g!r}) but not in the record")
+            elif g is None:
+                problems.append(f"{k} in the record ({w!r}) but absent live")
+            else:
+                problems.append(f"{k} is {g!r} live but {w!r} in the record")
+
+    return (not problems), ("live process matches the record in full"
                             if not problems else "; ".join(problems))
+
+
+# Differences that genuinely cannot change a measurement. Deliberately almost
+# empty: an exception here is a claim that a setting does not matter, and that
+# claim should be argued in a comment rather than assumed by omission.
+_ARGV_IGNORED: set[str] = set()
+
+
+def _flag_map(argv: list[str]) -> dict[str, str]:
+    """Normalise `--flag value`, `--flag=value` and bare `--flag` to a dict.
+
+    argv[0] is dropped: the record stores "vllm" while /proc may carry an
+    absolute interpreter path, and that difference is about how the process was
+    invoked rather than what it was configured to do.
+    """
+    out: dict[str, str] = {}
+    items = [a for a in argv[1:] if a not in ("", None)]
+    i = 0
+    while i < len(items):
+        tok = items[i]
+        if not tok.startswith("--"):
+            i += 1
+            continue
+        if "=" in tok:
+            k, v = tok.split("=", 1)
+            out[k] = v
+            i += 1
+            continue
+        nxt = items[i + 1] if i + 1 < len(items) else None
+        if nxt is not None and not nxt.startswith("--"):
+            out[tok] = nxt
+            i += 2
+        else:
+            out[tok] = ""          # bare flag
+            i += 1
+    return out
 
 
 def enforce_preflight(facts: ServerFacts, snapshot: dict[str, Any],
@@ -206,12 +279,8 @@ def enforce_preflight(facts: ServerFacts, snapshot: dict[str, Any],
                       require_process_match: bool = True) -> None:
     problems = []
     if not facts.reachable:
-        # One cause, one message. Port and process checks are meaningless
-        # against a server that isn't there, and stacking them buries the
-        # actual problem.
         problems.append(facts.detail)
-        raise PreflightError("preflight failed:\n  - " + "\n  - ".join(problems))
-    if not facts.model_present:
+    elif not facts.model_present:
         problems.append(facts.detail)
     if not facts.record_matches_url:
         problems.append(

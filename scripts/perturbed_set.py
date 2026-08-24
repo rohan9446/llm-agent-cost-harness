@@ -214,6 +214,19 @@ def build(n_swapped: int = 40, seed: int = 20260823) -> dict:
     return payload
 
 
+# Pinned budgets for the routing gate below.
+#
+# Not zero, and the reason matters. The README documents one remaining lexical
+# false accept; a gate at zero would fail on the known case, be overridden on
+# day one, and then catch nothing. These are set at the CURRENT measured state
+# so that any regression -- one new false accept -- turns the run red.
+#
+# Raising either number is a decision about the system's safety envelope and
+# belongs in a commit message, not in a flag.
+MAX_FALSE_ACCEPTS = 1
+MAX_FALSE_DECLINES = 0
+
+
 def score(path: str, names: str, snapshot: str) -> int:
     from parser_cascade import NameIndex, parse_holdings, parse_lookback
 
@@ -308,6 +321,30 @@ def score(path: str, names: str, snapshot: str) -> int:
         json.dump(existing, fh, indent=2)
     print(f"\n  wrote {os.path.relpath(summary_path, ROOT)} "
           f"(scores only; the queries stay local)")
+
+    # A REGRESSION GATE, not a report.
+    #
+    # This used to `return 0` unconditionally: 91 false accepts out of 91 would
+    # have exited success, printed in alarming capitals, and passed any
+    # automation that checked the exit code. A test whose result nothing can
+    # act on is a print statement.
+    #
+    # The threshold is pinned, not zero, because one lexical false accept is a
+    # known and documented limitation -- and a gate set below the current state
+    # of the system fails on day one and gets disabled. What it catches is a
+    # NEW one.
+    over_fa = fa > MAX_FALSE_ACCEPTS
+    over_fd = fd > MAX_FALSE_DECLINES
+    if over_fa or over_fd:
+        print(f"\n  FAIL: {fa} false accept(s) (max {MAX_FALSE_ACCEPTS}), "
+              f"{fd} false decline(s) (max {MAX_FALSE_DECLINES}).")
+        if over_fa:
+            print("  A new false accept means Tier 1 answers a query it cannot "
+                  "read. That is unbounded semantic cost and it is not a "
+                  "tuning question -- fix the routing rule.")
+        return 1
+    print(f"\n  PASS: {fa} false accept(s) within the pinned budget of "
+          f"{MAX_FALSE_ACCEPTS}, {fd} false decline(s) within {MAX_FALSE_DECLINES}.")
     return 0
 
 
