@@ -1,0 +1,57 @@
+{
+  "_note": "the scores as written by the run itself, kept because a superseded measurement is evidence about the tooling even when it is no longer evidence about the model",
+  "n": 1000,
+  "_gates": "truncation, topic coverage and numeric grounding -- all mechanical, so a brevity gain can be priced against them",
+  "truncated_briefings": 0,
+  "truncation_rate": 0.0,
+  "mean_words": 65.367,
+  "mean_sentences": 2.001,
+  "all_topics_rate": 0.993,
+  "topic_rate": {
+    "return": 1.0,
+    "risk": 0.997,
+    "diversification": 0.997,
+    "concentration": 0.999
+  },
+  "mean_numbers_per_briefing": 5.187,
+  "_numbers_note": "figures only (percentages and decimals). Bare integers are counted separately: they are usually holding counts and ordinals, not claims about the portfolio's statistics.",
+  "mean_bare_integers": 0.398,
+  "bare_integers_not_matching_a_metric": 0.216,
+  "briefings_with_an_ungrounded_number": 0.028,
+  "grounded_fraction_mean": 0.9944416666666664,
+  "all_holdings_named_rate": 0.16,
+  "worst_ungrounded": [
+    {
+      "ungrounded": [
+        "33.0%",
+        "43.4%"
+      ],
+      "n_numbers": 6
+    },
+    {
+      "ungrounded": [
+        "19%",
+        "5.4%"
+      ],
+      "n_numbers": 7
+    },
+    {
+      "ungrounded": [
+        "-19.7%"
+      ],
+      "n_numbers": 7
+    },
+    {
+      "ungrounded": [
+        "50%"
+      ],
+      "n_numbers": 7
+    },
+    {
+      "ungrounded": [
+        "13.3%"
+      ],
+      "n_numbers": 4
+    }
+  ]
+}

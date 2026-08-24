@@ -1,0 +1,251 @@
+{
+  "built_at": "2026-08-22T19:23:10Z",
+  "years": 10,
+  "source": "yfinance",
+  "yfinance_version": "1.6.0",
+  "auto_adjust": "library default (argument omitted, matching upstream)",
+  "n_tickers": 30,
+  "tickers": {
+    "AAPL": {
+      "file": "AAPL.json",
+      "provider_symbol": "AAPL",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "cae6b18af557aef04c3286ce628950bd0975385a799f5277d4ed8bd05a197971"
+    },
+    "ADBE": {
+      "file": "ADBE.json",
+      "provider_symbol": "ADBE",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "3e5bc29d1f9ebd6f93c797742ba29cdfd2c09df2e6ce767c8b82ce96919b58a2"
+    },
+    "AMD": {
+      "file": "AMD.json",
+      "provider_symbol": "AMD",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "2ba983b2216690d6cdac048e34a4d317629b037a79610fbc055247e430542121"
+    },
+    "AMZN": {
+      "file": "AMZN.json",
+      "provider_symbol": "AMZN",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "6f9a9738280f97c4841beaaafd50b407078f780876e2d588853ca7f499a91555"
+    },
+    "BAC": {
+      "file": "BAC.json",
+      "provider_symbol": "BAC",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "d2ecd32cde7a3d35ec7669600316f55880a04393f042f24b7b4195e230b1285b"
+    },
+    "BRK.B": {
+      "file": "BRK-B.json",
+      "provider_symbol": "BRK-B",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "1a0857a2837e247c45b35ab03528de6627a67df84f3b855993bdeee4d1fcf690"
+    },
+    "COST": {
+      "file": "COST.json",
+      "provider_symbol": "COST",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "cec004d9628c88527cc3b17833cf6aea70f395d7da636676fa75e7061eac2bd4"
+    },
+    "CRM": {
+      "file": "CRM.json",
+      "provider_symbol": "CRM",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "879fc1b69c4df74b0cc1b5ba409cccad44ece81a495b4f004a8752ce51ad5d14"
+    },
+    "CSCO": {
+      "file": "CSCO.json",
+      "provider_symbol": "CSCO",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "429670fa6ccfc0cc08177c31c2215e7311dfc78bf5bc82b561f5f0b18aee702f"
+    },
+    "CVX": {
+      "file": "CVX.json",
+      "provider_symbol": "CVX",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "e782d5e05e7b1718a294a4a2cf26beddc5acc6e104fe949bb65c47ac08f626a3"
+    },
+    "DIS": {
+      "file": "DIS.json",
+      "provider_symbol": "DIS",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "eb5822dddde1eca2deab227427ea3faa8ad3a77d2d8b4b9b1c26bf7627b17f47"
+    },
+    "GOOGL": {
+      "file": "GOOGL.json",
+      "provider_symbol": "GOOGL",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "a891fab78752da8ab3864ddc3a29feb6921f9fd049fda7c60b7322ba64ac19cb"
+    },
+    "INTC": {
+      "file": "INTC.json",
+      "provider_symbol": "INTC",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "6e39e2287696f3fea744db2bd68872a77f7e1b910e3328ab76caf115c06c7937"
+    },
+    "JNJ": {
+      "file": "JNJ.json",
+      "provider_symbol": "JNJ",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "0cdae1b1fb400a990df2ee75403e81f4495db6ae56086424b85662266b07559f"
+    },
+    "JPM": {
+      "file": "JPM.json",
+      "provider_symbol": "JPM",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "84df5b92e33b8e31ad707d0bcccafaa34ad312d9d3ecd170136c6079d4268292"
+    },
+    "KO": {
+      "file": "KO.json",
+      "provider_symbol": "KO",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "8b199b4459731908f8b83df8a2a9d53d8e623f6c7adae2c5cdf7a42cb2c26a73"
+    },
+    "MA": {
+      "file": "MA.json",
+      "provider_symbol": "MA",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "b923d6c791408e9382b72d467555ea6fa794f309f7aaadeccc8bfeda9bd8fc0f"
+    },
+    "META": {
+      "file": "META.json",
+      "provider_symbol": "META",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "10008a6fb83e8b7decc9af26eb1dd2c348dc20a2cb2dcfb87a97db45b18097e8"
+    },
+    "MSFT": {
+      "file": "MSFT.json",
+      "provider_symbol": "MSFT",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "67f1f57f840c44c2888af3a76764ae1e0481501cf611252cb004311d1da56036"
+    },
+    "NFLX": {
+      "file": "NFLX.json",
+      "provider_symbol": "NFLX",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "b413a6b643775ece91df075d04965232fd078d343bd1fa3deaa81daf45bcfbd1"
+    },
+    "NVDA": {
+      "file": "NVDA.json",
+      "provider_symbol": "NVDA",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "074ff1ae91667cd5b904cc6ef744dc61c46138c222d632b331635e5c9e48059c"
+    },
+    "ORCL": {
+      "file": "ORCL.json",
+      "provider_symbol": "ORCL",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "d9fd885175af427947f952143ecf67028265d14ec6008bfa065667ac797317a7"
+    },
+    "PEP": {
+      "file": "PEP.json",
+      "provider_symbol": "PEP",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "1c0f872a5c7367e176a4c08fe703b66fa4e929c83e0d1548bb48fa458b4c3a5f"
+    },
+    "PFE": {
+      "file": "PFE.json",
+      "provider_symbol": "PFE",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "217de0619002894abcfcc8c79ef58cfe7ff421a31e1ed837e960b99d86dd32b2"
+    },
+    "QCOM": {
+      "file": "QCOM.json",
+      "provider_symbol": "QCOM",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "db1e4de55847e844ca228e9ba35ed02415e1b88a3b3b8a41b1d5ba10ea16932c"
+    },
+    "TSLA": {
+      "file": "TSLA.json",
+      "provider_symbol": "TSLA",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "b807d229dc0451264afec74521225d4f6f49243962d90dd78a215a59f888b6ad"
+    },
+    "UNH": {
+      "file": "UNH.json",
+      "provider_symbol": "UNH",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "cedab0196e65840d07eaf0c0b85143ddda180ccf9cda41fc1f486f6d073baa51"
+    },
+    "V": {
+      "file": "V.json",
+      "provider_symbol": "V",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "cb5da206ce171e262b49ab9d91a7d27c0c5ba5aba9874039902e7b8448060bbd"
+    },
+    "WMT": {
+      "file": "WMT.json",
+      "provider_symbol": "WMT",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "6d88a7172d8e0b80beb2634d8bc6794cb1acaaa0e2f855457dabfd9b3d52d74a"
+    },
+    "XOM": {
+      "file": "XOM.json",
+      "provider_symbol": "XOM",
+      "rows": 2514,
+      "first": "2016-08-22",
+      "last": "2026-08-21",
+      "sha256": "7a2ffecb4c58871da3ca4a66217514cf22fc4f11b39b26ce8ca4602a8d1ff6da"
+    }
+  },
+  "snapshot_id": "154af01731fa65fc"
+}

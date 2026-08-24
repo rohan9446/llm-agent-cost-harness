@@ -1,0 +1,57 @@
+{
+  "_note": "the scores as written by the run itself, kept because a superseded measurement is evidence about the tooling even when it is no longer evidence about the model",
+  "n": 1000,
+  "_gates": "truncation, topic coverage and numeric grounding -- all mechanical, so a brevity gain can be priced against them",
+  "truncated_briefings": 0,
+  "truncation_rate": 0.0,
+  "mean_words": 65.394,
+  "mean_sentences": 2.0,
+  "all_topics_rate": 0.993,
+  "topic_rate": {
+    "return": 1.0,
+    "risk": 0.999,
+    "diversification": 0.995,
+    "concentration": 0.999
+  },
+  "mean_numbers_per_briefing": 5.575,
+  "briefings_with_an_ungrounded_number": 0.236,
+  "grounded_fraction_mean": 0.9605988095238107,
+  "all_holdings_named_rate": 0.158,
+  "worst_ungrounded": [
+    {
+      "ungrounded": [
+        "2",
+        "33.3%"
+      ],
+      "n_numbers": 8
+    },
+    {
+      "ungrounded": [
+        "2",
+        "50%"
+      ],
+      "n_numbers": 8
+    },
+    {
+      "ungrounded": [
+        "2",
+        "13.3%"
+      ],
+      "n_numbers": 5
+    },
+    {
+      "ungrounded": [
+        "33.0%",
+        "43.4%"
+      ],
+      "n_numbers": 7
+    },
+    {
+      "ungrounded": [
+        "2",
+        "77.9%"
+      ],
+      "n_numbers": 9
+    }
+  ]
+}

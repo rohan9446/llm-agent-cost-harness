@@ -1,0 +1,77 @@
+[
+  {
+    "name": "llm_call_count",
+    "ok": true,
+    "detail": "1966 successful calls for 966 queries (expected >= 1932; retries and failed queries add more)"
+  },
+  {
+    "name": "stage_called::AdvisorAgent",
+    "ok": true,
+    "detail": "966 calls (need >= 966)"
+  },
+  {
+    "name": "stage_called::ParserAgent",
+    "ok": true,
+    "detail": "1000 calls (need >= 966)"
+  },
+  {
+    "name": "template_fallback_disabled",
+    "ok": true,
+    "detail": "ADVISOR_ALLOW_TEMPLATE is unset"
+  },
+  {
+    "name": "single_model_requested",
+    "ok": true,
+    "detail": "requested=['meta-llama/Llama-3.1-8B-Instruct'] declared='meta-llama/Llama-3.1-8B-Instruct'"
+  },
+  {
+    "name": "live_server_advertises_model",
+    "ok": true,
+    "detail": "reachable=True advertised=['meta-llama/Llama-3.1-8B-Instruct'] (asked the running server, not the launch record)"
+  },
+  {
+    "name": "prices_from_snapshot",
+    "ok": true,
+    "detail": "all reads from snapshot"
+  },
+  {
+    "name": "snapshot_is_real_data",
+    "ok": true,
+    "detail": "snapshot_source='yfinance' id='154af01731fa65fc'"
+  },
+  {
+    "name": "prefix_caching_matches_stage",
+    "ok": true,
+    "detail": "expected 'off', observed 'off' (from the server launch record)"
+  },
+  {
+    "name": "telemetry_scoped_to_server_gpus",
+    "ok": true,
+    "detail": "telemetry='0' server='0' -- on a shared box an unscoped sampler would fold other users' GPUs into gpu.json"
+  },
+  {
+    "name": "live_process_config_verified",
+    "ok": true,
+    "detail": "live process matches the record"
+  },
+  {
+    "name": "snapshot_checksums_verified",
+    "ok": true,
+    "detail": "every ticker file re-hashed against MANIFEST.json before the run"
+  },
+  {
+    "name": "infrastructure_failure_rate",
+    "ok": true,
+    "detail": "0/1000 = 0.00% (limit 0.00%) -- server, timeout or harness faults"
+  },
+  {
+    "name": "workflow_failure_rate",
+    "ok": true,
+    "detail": "34/1000 = 3.40% (cap 10.00%) -- parser/model errors, REPORTED as a baseline property, not a fault"
+  },
+  {
+    "name": "query_set_frozen",
+    "ok": true,
+    "detail": "algorithms_1000 sha256=28da012c2deb31e9"
+  }
+]

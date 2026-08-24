@@ -1,0 +1,5 @@
+# Client side. vLLM is installed separately on the server -- pin it there and
+# record the version; validity.capture_env() reads it into every run manifest.
+openai>=1.40
+yfinance>=0.2.40
+numpy>=1.26

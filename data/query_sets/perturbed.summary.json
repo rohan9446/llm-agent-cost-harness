@@ -1,0 +1,24 @@
+{
+  "_note": "The perturbed robustness set is NOT published. Groups A and B reuse Canyon Code's sentence structure with entities substituted, and group G is verbatim corpus text, so the file cannot be redacted without becoming unrunnable. The composition and the scores are published here; the inputs stay private. Rebuild an equivalent set with: python scripts/perturbed_set.py --build",
+  "n": 91,
+  "sha256": "47592884b78c83a7eff14b4aa60d3313370b671410fb6966452607e1af6c5285",
+  "groups": {
+    "A": "corpus phrasing, ALL entities out of universe -> decline",
+    "B": "corpus phrasing, ONE entity out of universe -> decline",
+    "C": "authored substring traps (intel in intelligent) -> decline",
+    "D": "authored whole-word near misses (Morgan Stanley) -> decline",
+    "E": "authored ambiguity (partial weights) -> decline",
+    "F": "authored unreadable time windows -> decline",
+    "G": "unmodified corpus queries -> accept (control)"
+  },
+  "composition": {
+    "A": 40,
+    "B": 15,
+    "C": 10,
+    "D": 3,
+    "E": 4,
+    "F": 4,
+    "G": 15
+  },
+  "local_copy": "data/query_sets/perturbed.local.json (gitignored)"
+}

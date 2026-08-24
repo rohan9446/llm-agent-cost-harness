@@ -1,0 +1,82 @@
+[
+  {
+    "name": "llm_call_count",
+    "ok": true,
+    "detail": "100 successful calls for 100 queries (expected >= 100 = 100 advisor + 0 tier-2 parser; retries and failed queries add more)"
+  },
+  {
+    "name": "stage_called::AdvisorAgent",
+    "ok": true,
+    "detail": "100 calls (need >= 100)"
+  },
+  {
+    "name": "cascade_saved_the_calls_it_claims",
+    "ok": true,
+    "detail": "ParserAgent made 0 model calls and Tier 1 claims to have handled 108 of 108 queries without one; these must match exactly or the saving is not real"
+  },
+  {
+    "name": "cascade_saw_every_query",
+    "ok": true,
+    "detail": "tier1=108 + tier2=0 vs 100 successful queries -- a query that reached neither tier means the cascade was bypassed"
+  },
+  {
+    "name": "template_fallback_disabled",
+    "ok": true,
+    "detail": "ADVISOR_ALLOW_TEMPLATE is unset"
+  },
+  {
+    "name": "single_model_requested",
+    "ok": true,
+    "detail": "requested=['meta-llama/Llama-3.1-8B-Instruct'] declared='meta-llama/Llama-3.1-8B-Instruct'"
+  },
+  {
+    "name": "live_server_advertises_model",
+    "ok": true,
+    "detail": "reachable=True advertised=['meta-llama/Llama-3.1-8B-Instruct'] (asked the running server, not the launch record)"
+  },
+  {
+    "name": "prices_from_snapshot",
+    "ok": true,
+    "detail": "all reads from snapshot"
+  },
+  {
+    "name": "snapshot_is_real_data",
+    "ok": true,
+    "detail": "snapshot_source='yfinance' id='154af01731fa65fc'"
+  },
+  {
+    "name": "prefix_caching_matches_stage",
+    "ok": true,
+    "detail": "expected 'off', observed 'off' (from the server launch record)"
+  },
+  {
+    "name": "telemetry_scoped_to_server_gpus",
+    "ok": true,
+    "detail": "telemetry='0' server='0' -- on a shared box an unscoped sampler would fold other users' GPUs into gpu.json"
+  },
+  {
+    "name": "live_process_config_verified",
+    "ok": true,
+    "detail": "live process matches the record"
+  },
+  {
+    "name": "snapshot_checksums_verified",
+    "ok": true,
+    "detail": "every ticker file re-hashed against MANIFEST.json before the run"
+  },
+  {
+    "name": "infrastructure_failure_rate",
+    "ok": true,
+    "detail": "0/100 = 0.00% (limit 0.00%) -- server, timeout or harness faults"
+  },
+  {
+    "name": "workflow_failure_rate",
+    "ok": true,
+    "detail": "0/100 = 0.00% (cap 10.00%) -- parser/model errors, REPORTED as a baseline property, not a fault"
+  },
+  {
+    "name": "query_set_frozen",
+    "ok": true,
+    "detail": "systems_100 sha256=6e54c6290f0ef469"
+  }
+]

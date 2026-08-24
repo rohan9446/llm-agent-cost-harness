@@ -1,0 +1,50 @@
+{
+  "_note": "DERIVED, not shipped by Canyon Code. Built by enumerating every holding surface form in queries.json and resolving each to a ticker by hand. Used for two things only: (1) deciding which tickers the frozen price snapshot must cover, (2) scoring parser output in the evaluation. The B0 LLM parser does NOT see this file -- it is asked to emit tickers directly. The A1 deterministic parser will use it, and that is exactly why the generalization set must contain companies absent from this map.",
+  "_corpus": "queries.json, 1000 queries, 30 distinct companies",
+  "aliases": {
+    "AAPL": "AAPL", "Apple": "AAPL",
+    "MSFT": "MSFT", "Microsoft": "MSFT",
+    "AMZN": "AMZN", "Amazon": "AMZN",
+    "GOOGL": "GOOGL", "Alphabet": "GOOGL",
+    "META": "META", "Meta": "META",
+    "NVDA": "NVDA", "Nvidia": "NVDA",
+    "TSLA": "TSLA", "Tesla": "TSLA",
+    "AMD": "AMD",
+    "INTC": "INTC", "Intel": "INTC",
+    "QCOM": "QCOM", "Qualcomm": "QCOM",
+    "CRM": "CRM", "Salesforce": "CRM",
+    "ADBE": "ADBE", "Adobe": "ADBE",
+    "ORCL": "ORCL", "Oracle": "ORCL",
+    "CSCO": "CSCO", "Cisco": "CSCO",
+    "NFLX": "NFLX", "Netflix": "NFLX",
+    "DIS": "DIS", "Disney": "DIS",
+    "JPM": "JPM", "JPMorgan": "JPM",
+    "BAC": "BAC", "Bank of America": "BAC",
+    "V": "V", "Visa": "V",
+    "MA": "MA", "Mastercard": "MA",
+    "BRK.B": "BRK.B", "Berkshire Hathaway": "BRK.B",
+    "UNH": "UNH", "UnitedHealth": "UNH",
+    "JNJ": "JNJ", "Johnson & Johnson": "JNJ",
+    "PFE": "PFE", "Pfizer": "PFE",
+    "XOM": "XOM", "ExxonMobil": "XOM",
+    "CVX": "CVX", "Chevron": "CVX",
+    "WMT": "WMT", "Walmart": "WMT",
+    "COST": "COST", "Costco": "COST",
+    "KO": "KO", "Coca-Cola": "KO",
+    "PEP": "PEP", "PepsiCo": "PEP"
+  },
+  "lookback_phrases": {
+    "_note": "Surface form -> days, as used by the corpus generator. Recovered by cross-checking each phrase against expected_lookback_days; every mapping below was verified to agree on 100% of the queries containing it.",
+    "30 days": 30, "month": 30,
+    "90 days": 90, "3 months": 90,
+    "6 months": 180,
+    "year": 365, "12 months": 365,
+    "18 months": 545,
+    "2 years": 730,
+    "5 years": 1825
+  },
+  "policy": {
+    "_note": "Applied AFTER parsing, never inside it. queries.json records null when the user stated no window; that null is ground truth for the parser. What the application then does with it is our decision, recorded here so the report can state it.",
+    "default_lookback_days": 365
+  }
+}

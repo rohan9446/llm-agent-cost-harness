@@ -1,0 +1,132 @@
+{
+  "_note": "re-judged under the validity rules current at the time of this file, not the rules the run was made under. Checks listed in _added_after_the_runs postdate the measurement; nothing was backfilled.",
+  "_added_after_the_runs": [
+    "llm_calls_all_succeeded_first_time",
+    "query_content_pinned",
+    "source_tree_pinned"
+  ],
+  "_advisor_reference_supplied_at_recheck": "results/A1-offline-n1000-c8-rep2",
+  "_diagnosis": {},
+  "checks": [
+    {
+      "name": "llm_call_count",
+      "ok": true,
+      "detail": "1000 successful calls for 1000 queries (expected >= 1000 = 1000 advisor + 0 tier-2 parser; retries and failed queries add more)"
+    },
+    {
+      "name": "stage_called::AdvisorAgent",
+      "ok": true,
+      "detail": "1000 calls (need >= 1000)"
+    },
+    {
+      "name": "cascade_saved_the_calls_it_claims",
+      "ok": true,
+      "detail": "ParserAgent made 0 model calls and Tier 1 claims to have handled 1000 of 1000 queries without one; these must match exactly or the saving is not real"
+    },
+    {
+      "name": "cascade_saw_every_query",
+      "ok": true,
+      "detail": "tier1=1000 + tier2=0 must equal 1000 attempted queries exactly; a mismatch means either the cascade was bypassed or the counters cover a different window than the measurement (warm-up leaking in was a real bug here)"
+    },
+    {
+      "name": "name_table_recorded",
+      "ok": true,
+      "detail": "names.json sha256=5d6656f57b7edbd7 -- A1 coverage is a property of this name table, so a run that does not record which table it used is not reproducible"
+    },
+    {
+      "name": "template_fallback_disabled",
+      "ok": true,
+      "detail": "ADVISOR_ALLOW_TEMPLATE is unset"
+    },
+    {
+      "name": "single_model_requested",
+      "ok": true,
+      "detail": "requested=['meta-llama/Llama-3.1-8B-Instruct'] declared='meta-llama/Llama-3.1-8B-Instruct'"
+    },
+    {
+      "name": "live_server_advertises_model",
+      "ok": true,
+      "detail": "reachable=True advertised=['meta-llama/Llama-3.1-8B-Instruct'] (asked the running server, not the launch record)"
+    },
+    {
+      "name": "prices_from_snapshot",
+      "ok": true,
+      "detail": "all reads from snapshot"
+    },
+    {
+      "name": "snapshot_is_real_data",
+      "ok": true,
+      "detail": "snapshot_source='yfinance' id='154af01731fa65fc'"
+    },
+    {
+      "name": "prefix_caching_matches_stage",
+      "ok": true,
+      "detail": "expected 'off', observed 'off' (from the server launch record)"
+    },
+    {
+      "name": "telemetry_scoped_to_server_gpus",
+      "ok": true,
+      "detail": "telemetry='0' server='0' -- on a shared box an unscoped sampler would fold other users' GPUs into gpu.json"
+    },
+    {
+      "name": "live_process_config_verified",
+      "ok": true,
+      "detail": "live process matches the record"
+    },
+    {
+      "name": "snapshot_checksums_verified",
+      "ok": true,
+      "detail": "every ticker file re-hashed against MANIFEST.json before the run"
+    },
+    {
+      "name": "infrastructure_failure_rate",
+      "ok": true,
+      "detail": "0/1000 = 0.00% (limit 0.00%) -- server, timeout or harness faults"
+    },
+    {
+      "name": "workflow_failure_rate",
+      "ok": true,
+      "detail": "0/1000 = 0.00% (cap 10.00%) -- parser/model errors, REPORTED as a baseline property, not a fault"
+    },
+    {
+      "name": "llm_calls_all_succeeded_first_time",
+      "ok": true,
+      "detail": "0 failed model call(s) (limit 0) -- a retried call still spent measured wall-clock, so it is an infrastructure fault even when the query it belonged to succeeded"
+    },
+    {
+      "name": "query_set_frozen",
+      "ok": true,
+      "detail": "algorithms_1000 sha256=28da012c2deb31e9"
+    },
+    {
+      "name": "query_content_pinned",
+      "ok": false,
+      "detail": "queries sha256=MISSING corpus sha256=MISSING -- an id list pins which queries ran, not what they said, and the corpus is not in this repository for a reader to diff"
+    },
+    {
+      "name": "source_tree_pinned",
+      "ok": false,
+      "detail": "source sha256=MISSING git_sha=None git_dirty=False"
+    },
+    {
+      "name": "advisor_no_truncation",
+      "ok": true,
+      "detail": "0 of 1000 briefings hit the token ceiling (0.00%, limit 0.00%) -- brevity must be the model choosing to write less, never the sampler cutting it off"
+    },
+    {
+      "name": "advisor_scored_by_the_same_ruler",
+      "ok": true,
+      "detail": "scorer d3189fac2eea vs reference d3189fac2eea -- two quality scores are comparable only when the code that produced them is identical; re-score both with scripts/rescore_advisor.py"
+    },
+    {
+      "name": "advisor_topic_coverage_non_inferior",
+      "ok": false,
+      "detail": "76.6% of briefings cover all four required topics vs 99.7% in results/A1-offline-n1000-c8-rep2 (margin 2pp) -- dropping a topic is a changed deliverable, not a compressed one"
+    },
+    {
+      "name": "advisor_grounding_non_inferior",
+      "ok": true,
+      "detail": "99.7% of figures match something the workflow computed vs 98.9% in results/A1-offline-n1000-c8-rep2 (margin 2pp) -- a model under pressure to be brief can drop specifics, but it can also invent them"
+    }
+  ]
+}

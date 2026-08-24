@@ -1,0 +1,191 @@
+{
+  "_provenance": "Fetched from yfinance Ticker.info for the tickers in the frozen price snapshot. NOT derived from queries.json in any way. This is what makes A1's coverage a measurement rather than a tautology -- see the module docstring in scripts/fetch_names.py.",
+  "_universe_source": "data/snapshot/MANIFEST.json",
+  "source": "yfinance Ticker.info (longName, shortName)",
+  "yfinance_version": "1.6.0",
+  "fetched_at": "2026-08-23T16:57:42Z",
+  "n_tickers": 30,
+  "names": {
+    "AAPL": {
+      "ticker": "AAPL",
+      "provider_symbol": "AAPL",
+      "longName": "Apple Inc.",
+      "shortName": "Apple Inc."
+    },
+    "ADBE": {
+      "ticker": "ADBE",
+      "provider_symbol": "ADBE",
+      "longName": "Adobe Inc.",
+      "shortName": "Adobe Inc."
+    },
+    "AMD": {
+      "ticker": "AMD",
+      "provider_symbol": "AMD",
+      "longName": "",
+      "shortName": "Advanced Micro Devices, Inc."
+    },
+    "AMZN": {
+      "ticker": "AMZN",
+      "provider_symbol": "AMZN",
+      "longName": "Amazon.com, Inc.",
+      "shortName": "Amazon.com, Inc."
+    },
+    "BAC": {
+      "ticker": "BAC",
+      "provider_symbol": "BAC",
+      "longName": "",
+      "shortName": "Bank of America Corporation"
+    },
+    "BRK.B": {
+      "ticker": "BRK.B",
+      "provider_symbol": "BRK-B",
+      "longName": "Berkshire Hathaway Inc.",
+      "shortName": "Berkshire Hathaway Inc. New"
+    },
+    "COST": {
+      "ticker": "COST",
+      "provider_symbol": "COST",
+      "longName": "Costco Wholesale Corporation",
+      "shortName": "Costco Wholesale Corporation"
+    },
+    "CRM": {
+      "ticker": "CRM",
+      "provider_symbol": "CRM",
+      "longName": "",
+      "shortName": "Salesforce, Inc."
+    },
+    "CSCO": {
+      "ticker": "CSCO",
+      "provider_symbol": "CSCO",
+      "longName": "Cisco Systems, Inc.",
+      "shortName": "Cisco Systems, Inc."
+    },
+    "CVX": {
+      "ticker": "CVX",
+      "provider_symbol": "CVX",
+      "longName": "Chevron Corporation",
+      "shortName": "Chevron Corporation"
+    },
+    "DIS": {
+      "ticker": "DIS",
+      "provider_symbol": "DIS",
+      "longName": "",
+      "shortName": "Walt Disney Company (The)"
+    },
+    "GOOGL": {
+      "ticker": "GOOGL",
+      "provider_symbol": "GOOGL",
+      "longName": "Alphabet Inc.",
+      "shortName": "Alphabet Inc."
+    },
+    "INTC": {
+      "ticker": "INTC",
+      "provider_symbol": "INTC",
+      "longName": "Intel Corporation",
+      "shortName": "Intel Corporation"
+    },
+    "JNJ": {
+      "ticker": "JNJ",
+      "provider_symbol": "JNJ",
+      "longName": "Johnson & Johnson",
+      "shortName": "Johnson & Johnson"
+    },
+    "JPM": {
+      "ticker": "JPM",
+      "provider_symbol": "JPM",
+      "longName": "",
+      "shortName": "JP Morgan Chase & Co."
+    },
+    "KO": {
+      "ticker": "KO",
+      "provider_symbol": "KO",
+      "longName": "",
+      "shortName": "Coca-Cola Company (The)"
+    },
+    "MA": {
+      "ticker": "MA",
+      "provider_symbol": "MA",
+      "longName": "",
+      "shortName": "Mastercard Incorporated"
+    },
+    "META": {
+      "ticker": "META",
+      "provider_symbol": "META",
+      "longName": "Meta Platforms, Inc.",
+      "shortName": "Meta Platforms, Inc."
+    },
+    "MSFT": {
+      "ticker": "MSFT",
+      "provider_symbol": "MSFT",
+      "longName": "Microsoft Corporation",
+      "shortName": "Microsoft Corporation"
+    },
+    "NFLX": {
+      "ticker": "NFLX",
+      "provider_symbol": "NFLX",
+      "longName": "Netflix, Inc.",
+      "shortName": "Netflix, Inc."
+    },
+    "NVDA": {
+      "ticker": "NVDA",
+      "provider_symbol": "NVDA",
+      "longName": "NVIDIA Corporation",
+      "shortName": "NVIDIA Corporation"
+    },
+    "ORCL": {
+      "ticker": "ORCL",
+      "provider_symbol": "ORCL",
+      "longName": "Oracle Corporation",
+      "shortName": "Oracle Corporation"
+    },
+    "PEP": {
+      "ticker": "PEP",
+      "provider_symbol": "PEP",
+      "longName": "PepsiCo, Inc.",
+      "shortName": "Pepsico, Inc."
+    },
+    "PFE": {
+      "ticker": "PFE",
+      "provider_symbol": "PFE",
+      "longName": "",
+      "shortName": "Pfizer, Inc."
+    },
+    "QCOM": {
+      "ticker": "QCOM",
+      "provider_symbol": "QCOM",
+      "longName": "QUALCOMM Incorporated",
+      "shortName": "QUALCOMM Incorporated"
+    },
+    "TSLA": {
+      "ticker": "TSLA",
+      "provider_symbol": "TSLA",
+      "longName": "Tesla, Inc.",
+      "shortName": "Tesla, Inc."
+    },
+    "UNH": {
+      "ticker": "UNH",
+      "provider_symbol": "UNH",
+      "longName": "UnitedHealth Group Incorporated",
+      "shortName": "UnitedHealth Group Incorporated"
+    },
+    "V": {
+      "ticker": "V",
+      "provider_symbol": "V",
+      "longName": "",
+      "shortName": "Visa Inc."
+    },
+    "WMT": {
+      "ticker": "WMT",
+      "provider_symbol": "WMT",
+      "longName": "Walmart Inc.",
+      "shortName": "Walmart Inc."
+    },
+    "XOM": {
+      "ticker": "XOM",
+      "provider_symbol": "XOM",
+      "longName": "",
+      "shortName": "ExxonMobil Holdings Corporation"
+    }
+  },
+  "names_sha256": "5d6656f57b7edbd75d35627c75b7b7e02a477409c33b54088cfa64a93ae0fd5d"
+}

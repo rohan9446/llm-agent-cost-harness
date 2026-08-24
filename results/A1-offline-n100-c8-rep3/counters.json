@@ -1,0 +1,17 @@
+{
+  "llm_calls": 100,
+  "llm_failures": 0,
+  "llm_calls_by_agent": {
+    "AdvisorAgent": 100
+  },
+  "requested_models": [
+    "meta-llama/Llama-3.1-8B-Instruct"
+  ],
+  "wall_s": 21.798446215689182,
+  "parser_kind": "cascade",
+  "parser_tiers": {
+    "tier1": 108,
+    "tier2": 0,
+    "tier2_reasons": {}
+  }
+}

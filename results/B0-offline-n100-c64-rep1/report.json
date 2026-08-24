@@ -1,0 +1,483 @@
+{
+  "run": {
+    "run_id": "B0-offline-n100-c64-rep1",
+    "stage": "B0",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "concurrency": 64,
+    "prefix_caching": "off",
+    "snapshot_id": "154af01731fa65fc",
+    "snapshot_source": "yfinance",
+    "advisor_max_tokens": 400,
+    "vllm": "0.27.1",
+    "n_queries_ok": 97,
+    "n_queries_failed": 3,
+    "wall_s": 10.178359355777502
+  },
+  "reliability": {
+    "n_attempted": 100,
+    "n_ok": 97,
+    "workflow_failures": 3,
+    "workflow_failure_rate": 0.03,
+    "infrastructure_failures": 0,
+    "infrastructure_failure_rate": 0.0,
+    "_note": "infrastructure failures invalidate a run (gate: 0); workflow failures are a measured property of the baseline",
+    "workflow_failure_detail": [
+      {
+        "query_id": "75",
+        "error": "ParseError: no JSON object in model output for '<redacted>': '<redacted>'",
+        "query_redacted": true,
+        "parsed_holdings": []
+      },
+      {
+        "query_id": "95",
+        "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "query_redacted": true,
+        "parsed_holdings": [
+          "MCD",
+          "JNJ",
+          "AMZN",
+          "KO",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "97",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot at ~/b0/data/snapshot. Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "query_redacted": true,
+        "parsed_holdings": [
+          "DIS",
+          "JPM",
+          "MA",
+          "SFM",
+          "V"
+        ]
+      }
+    ],
+    "infrastructure_failure_detail": []
+  },
+  "cost": {
+    "wall_s": 10.178359355777502,
+    "n_queries": 97,
+    "n_gpus": 1,
+    "usd_per_gpu_hour": 1.39,
+    "rate_source": "RunPod A100 PCIe 80GB on-demand, retrieved 2026-08-22",
+    "total_usd": 0.003929977640147424,
+    "cost_per_query_usd": 4.0515233403581694e-05,
+    "basis": "allocated GPU time x rental-equivalent rate",
+    "n_attempted": 100,
+    "cost_per_attempted_query_usd": 3.9299776401474244e-05,
+    "_attempted_note": "failed queries consumed GPU time too; dividing only by successes understates cost per query. Per-attempted is the headline figure: a system that answers 97 of 100 queries has not become cheaper by discarding the 3",
+    "per_query_distribution_usd": {
+      "n": 100,
+      "mean": 3.929977640147425e-05,
+      "p50": 3.8992206026245565e-05,
+      "p90": 4.968548978256574e-05,
+      "p95": 5.520784626871838e-05,
+      "p99": 6.130045910521481e-05,
+      "min": 9.345885305266428e-06,
+      "max": 6.175199359419441e-05
+    },
+    "note": "total is measured; per-query is the total split by fitted token weight, never a per-request latency multiplication"
+  },
+  "token_weights": {
+    "_kind": "fitted attribution weights, NOT measured GPU-seconds/token",
+    "marginal_s_per_prefill_token": 7.990686260039208e-05,
+    "marginal_s_per_decode_token": 0.011628565982265596,
+    "fixed_request_overhead_s": 0.01615906566152401,
+    "fixed_decode_entry_s": 0.0,
+    "decode_to_prefill_ratio": 145.52649927477614,
+    "r2_prefill_fit": 0.6596717078072758,
+    "r2_decode_fit": 0.9999230851609046,
+    "n_calls": 198,
+    "fitted_at_concurrency": 1,
+    "note": "weights fitted on B0cal-offline-n100-c1-rep1"
+  },
+  "cost_by_stage": [
+    {
+      "stage": "AdvisorAgent",
+      "calls": 97,
+      "pct_of_llm_cost": 72.01539629380684,
+      "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
+      "attributed_usd": 0.0028301889718101657,
+      "usd_per_query": 2.9177205894950163e-05,
+      "prompt_tokens": 24460,
+      "completion_tokens": 12330,
+      "cached_tokens": 0
+    },
+    {
+      "stage": "ParserAgent",
+      "calls": 100,
+      "pct_of_llm_cost": 27.984603706193155,
+      "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
+      "attributed_usd": 0.0010997886683372583,
+      "usd_per_query": 1.133802750863153e-05,
+      "prompt_tokens": 29888,
+      "completion_tokens": 4627,
+      "cached_tokens": 0
+    }
+  ],
+  "latency_s": {
+    "end_to_end": {
+      "n": 97,
+      "mean": 5.3162692133145235,
+      "p50": 5.348079321905971,
+      "p90": 6.83046368509531,
+      "p95": 7.378099111840129,
+      "p99": 8.118113864213228,
+      "min": 2.691775720566511,
+      "max": 8.393819024786353
+    },
+    "ttft": {
+      "n": 197,
+      "mean": 0.3430264880077034,
+      "p50": 0.16960347071290016,
+      "p90": 1.0175108723342419,
+      "p95": 1.163469897583127,
+      "p99": 1.3049400663003325,
+      "min": 0.05475170165300369,
+      "max": 1.370708979666233
+    },
+    "tpot": {
+      "n": 197,
+      "mean": 0.030474324253500003,
+      "p50": 0.028194817215252934,
+      "p90": 0.045724820462055504,
+      "p95": 0.05069589002856186,
+      "p99": 0.054958263784646987,
+      "min": 0.012788573626515478,
+      "max": 0.057457319948644864
+    },
+    "by_llm_stage": {
+      "AdvisorAgent": {
+        "n": 97,
+        "mean": 3.1025816945781566,
+        "p50": 3.155013144016266,
+        "p90": 4.077141263522208,
+        "p95": 4.246024284511805,
+        "p99": 4.516692080534995,
+        "min": 1.4706278555095196,
+        "max": 4.773527709767222
+      },
+      "ParserAgent": {
+        "n": 100,
+        "mean": 2.164620593190193,
+        "p50": 1.9838555241003633,
+        "p90": 3.0988039476796985,
+        "p95": 3.20568772777915,
+        "p99": 4.30015167221427,
+        "min": 0.5874059442430735,
+        "max": 4.341351781971753
+      }
+    }
+  },
+  "throughput": {
+    "queries_per_s": 9.530023121549572,
+    "llm_calls_per_s": 19.354789226239852,
+    "prompt_tokens_per_s": 5339.563882577074,
+    "output_tokens_per_s": 1665.9855883723308
+  },
+  "tokens": {
+    "prompt": 54348,
+    "completion": 16957,
+    "cached_prompt": 0,
+    "per_query_prompt": 560.2886597938144,
+    "per_query_completion": 174.81443298969072,
+    "output_share": 0.23780941027978403
+  },
+  "agents": {
+    "_note": "wall_s is inclusive of nested agent calls and does NOT sum to 100%; self_s is exclusive and does",
+    "AdvisorAgent": {
+      "calls": 97,
+      "wall_s": 301.0683730356395,
+      "self_s": 301.0683730356395,
+      "cpu_s": 3.236953596000001,
+      "wall_s_per_query": 3.103797660161232,
+      "self_s_per_query": 3.103797660161232,
+      "cpu_s_per_query": 0.03337065562886599,
+      "pct_of_self_time": 57.88944137843671
+    },
+    "ParserAgent": {
+      "calls": 100,
+      "wall_s": 216.69395135901868,
+      "self_s": 216.69395135901868,
+      "cpu_s": 1.3762177590000004,
+      "wall_s_per_query": 2.233958261433182,
+      "self_s_per_query": 2.233958261433182,
+      "cpu_s_per_query": 0.014187811948453612,
+      "pct_of_self_time": 41.66592348368247
+    },
+    "PriceAgent": {
+      "calls": 322,
+      "wall_s": 2.1051246533170342,
+      "self_s": 2.1051246533170342,
+      "cpu_s": 0.38775348200000037,
+      "wall_s_per_query": 0.021702316013577673,
+      "self_s_per_query": 0.021702316013577673,
+      "cpu_s_per_query": 0.003997458577319591,
+      "pct_of_self_time": 0.40477347050356705
+    },
+    "MetricsAgent": {
+      "calls": 322,
+      "wall_s": 2.256407978013158,
+      "self_s": 0.1512833246961236,
+      "cpu_s": 0.4998753020000003,
+      "wall_s_per_query": 0.023261937917661422,
+      "self_s_per_query": 0.0015596219040837484,
+      "cpu_s_per_query": 0.005153353628865982,
+      "pct_of_self_time": 0.029088765014499026
+    },
+    "RiskAgent": {
+      "calls": 97,
+      "wall_s": 0.05602714605629444,
+      "self_s": 0.05602714605629444,
+      "cpu_s": 0.050395816999999996,
+      "wall_s_per_query": 0.0005775994438793242,
+      "self_s_per_query": 0.0005775994438793242,
+      "cpu_s_per_query": 0.0005195445051546391,
+      "pct_of_self_time": 0.010772902362756739
+    }
+  },
+  "parser_eval": {
+    "_note": "shipped labels are Canyon Code's; derived labels come from our own alias map, which covers this corpus by construction and proves nothing about generalization",
+    "n_scored": 99,
+    "n_failed_scored": 2,
+    "_failed_note": "parser accuracy is computed over attempted queries, not successful ones: a parse error bad enough to crash the workflow is still a parse error, and excluding it would make the metric most optimistic exactly where the parser is worst",
+    "shipped": {
+      "holding_count": {
+        "n": 99,
+        "accuracy": 1.0
+      },
+      "lookback_value": {
+        "n": 99,
+        "accuracy": 1.0
+      },
+      "lookback_stated_vs_unstated": {
+        "n": 99,
+        "accuracy": 1.0
+      }
+    },
+    "derived": {
+      "ticker_set": {
+        "n": 99,
+        "accuracy": 0.9696969696969697
+      },
+      "weights_within_1e-3": {
+        "n": 99,
+        "accuracy": 0.9696969696969697
+      },
+      "weight_max_abs_error_p95": 2.7755575615628914e-17,
+      "weight_l1_error_mean": 0.012121212121212132,
+      "n_unresolvable_by_alias_map": 0,
+      "unresolvable_query_ids": []
+    },
+    "by_phrasing": {
+      "equal": {
+        "n": 23,
+        "count_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        },
+        "lookback_value_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        },
+        "weights_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        }
+      },
+      "percent": {
+        "n": 63,
+        "count_ok": {
+          "n": 63,
+          "accuracy": 1.0
+        },
+        "lookback_value_ok": {
+          "n": 63,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 63,
+          "accuracy": 0.9682539682539683
+        },
+        "weights_ok": {
+          "n": 63,
+          "accuracy": 0.9682539682539683
+        }
+      },
+      "unweighted": {
+        "n": 13,
+        "count_ok": {
+          "n": 13,
+          "accuracy": 1.0
+        },
+        "lookback_value_ok": {
+          "n": 13,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "weights_ok": {
+          "n": 13,
+          "accuracy": 0.9230769230769231
+        }
+      }
+    },
+    "mismatches": [
+      {
+        "query_id": "81",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.26,
+        "weight_l1_error": 0.52,
+        "weights_expected": {
+          "MA": 0.26,
+          "PFE": 0.13,
+          "AMD": 0.61
+        },
+        "weights_got": {
+          "AAPL": 0.26,
+          "PFE": 0.13,
+          "AMD": 0.61
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "AMD",
+          "MA",
+          "PFE"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMD",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "95",
+        "outcome": "failed",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.4,
+        "weights_expected": {
+          "MA": 0.2,
+          "JNJ": 0.2,
+          "AMZN": 0.2,
+          "KO": 0.2,
+          "PFE": 0.2
+        },
+        "weights_got": {
+          "MCD": 0.2,
+          "JNJ": 0.2,
+          "AMZN": 0.2,
+          "KO": 0.2,
+          "PFE": 0.2
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AMZN",
+          "JNJ",
+          "KO",
+          "MA",
+          "PFE"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "JNJ",
+          "KO",
+          "MCD",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "97",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.14,
+        "weight_l1_error": 0.28,
+        "weights_expected": {
+          "MA": 0.13,
+          "JPM": 0.28,
+          "CRM": 0.14,
+          "DIS": 0.31,
+          "V": 0.14
+        },
+        "weights_got": {
+          "DIS": 0.31,
+          "JPM": 0.28,
+          "MA": 0.13,
+          "SFM": 0.14,
+          "V": 0.14
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "CRM",
+          "DIS",
+          "JPM",
+          "MA",
+          "V"
+        ],
+        "tickers_got": [
+          "DIS",
+          "JPM",
+          "MA",
+          "SFM",
+          "V"
+        ]
+      }
+    ]
+  },
+  "gpu": {
+    "available": true,
+    "n_samples": 19,
+    "interval_s": 0.5,
+    "devices_under_test": "0",
+    "gpus": {
+      "0": {
+        "util_gpu_mean": 100.0,
+        "util_gpu_p50": 100.0,
+        "util_gpu_p95": 100.0,
+        "util_gpu_max": 100.0,
+        "busy_fraction": 1.0,
+        "mem_used_mb_max": 73373.0,
+        "mem_total_mb": 81920.0,
+        "temp_c_max": 70.0,
+        "power_w_mean": 284.8905263157895,
+        "sm_clock_mhz_mean": 1241.842105263158
+      }
+    }
+  },
+  "llm_calls": {
+    "total": 197,
+    "ok": 197,
+    "errors": 0,
+    "by_agent": {
+      "ParserAgent": 100,
+      "AdvisorAgent": 97
+    }
+  },
+  "_redaction": "Supplied query text removed. Failures are identified by query_id; the error class, the parse and the shipped labels are retained. See scripts/redact_artifacts.py."
+}

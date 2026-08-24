@@ -1,0 +1,114 @@
+# =============================================================================
+# NOT REDISTRIBUTED: Canyon Code's supplied material
+# =============================================================================
+# This repository is public. It contains the measurement harness, the
+# optimizations and the results -- all of which are my work. It deliberately
+# does NOT contain the assignment's supplied workflow or its query corpus:
+# publishing an employer's take-home exercise would leak it for every future
+# candidate, and it is not mine to republish.
+#
+# To run this repo you need those files. Drop them in:
+#
+#   workflow/portfolio/agents/{price,metrics,risk,advisor}_agent.py
+#   workflow/portfolio/workflows/portfolio_workflow.py
+#   data/queries.json
+#
+# PATCHES.md documents every change made to them, without reproducing them.
+# parser_agent.py and parser_cascade.py ARE included: both are new stages
+# written for this project, not part of the handout.
+workflow/portfolio/agents/price_agent.py
+workflow/portfolio/agents/metrics_agent.py
+workflow/portfolio/agents/risk_agent.py
+workflow/portfolio/agents/advisor_agent.py
+workflow/portfolio/workflows/portfolio_workflow.py
+workflow/portfolio/config/
+docs/upstream/
+data/queries.json
+
+# =============================================================================
+# environment
+# =============================================================================
+.venv/
+ccenv/
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.env
+nohup.out
+*.tar.gz
+
+# =============================================================================
+# logs
+# =============================================================================
+# vLLM server logs carry the cluster hostname, the home directory path and the
+# full launch argv. None of it is secret and none of it is something a reader
+# needs -- the CONFIGURATION is what matters, and that lives in
+# results/*/manifest.json with the hostname stored as a truncated SHA-256.
+# Excluded rather than sanitised: hand-scrubbing a 650 KB log is how a hostname
+# ends up in a public repo.
+logs/
+
+# =============================================================================
+# frozen price snapshot
+# =============================================================================
+# Provider data (yfinance/Yahoo). Redistributing it raises a licensing question
+# this project has no need to answer, because MANIFEST.json carries a sha256
+# for every ticker file plus the snapshot_id that every run records. Anyone can
+# rebuild the snapshot and PROVE it matches the one these results came from:
+#
+#   python scripts/build_snapshot.py     # then compare snapshot_id
+#
+# Verifiability without redistribution.
+data/snapshot/*.json
+!data/snapshot/MANIFEST.json
+
+# =============================================================================
+# run outputs
+# =============================================================================
+# KEPT -- these are the evidence:
+#   manifest.json      what the run claimed: config, versions, checksums
+#   validity.json      every assertion and its verdict
+#   validity.recheck.json  the same run re-judged under the CURRENT rules,
+#                      which are stricter than the ones it was made under.
+#                      Kept precisely because it is the unflattering file.
+#   report.json        the computed metrics
+#   parser_eval.json   parser correctness
+#   advisor_eval.json  briefing quality gates
+#   counters.json      LLM call counts and the Tier-1/Tier-2 split
+#   gpu.json           telemetry
+#   failures.jsonl     what broke and why -- small, and the most informative file
+#
+# EXCLUDED -- large and regenerable by re-running:
+#   trace.jsonl        every span and LLM call, ~5 MB per 1000-query run
+#   results.jsonl      per-query output including full briefings, ~3 MB
+#                      (also contains the supplied query text verbatim)
+results/**/trace.jsonl
+results/**/results.jsonl
+results/server.json
+
+# failures.jsonl records the full query on every row, because that is what
+# makes a failure debuggable locally. Same supplied text as results.jsonl, so
+# same rule. The failure TAXONOMY still reaches the repo through report.json,
+# which carries query_id, error class and the parse but not the sentence.
+results/**/failures.jsonl
+
+# =============================================================================
+# the perturbed robustness set
+# =============================================================================
+# Not published, and not redactable either. Its control group is verbatim
+# corpus text and two further groups keep Canyon Code's sentence structure with
+# entities substituted -- so the phrasing is theirs even where the companies
+# are not. Stripping the text would leave a file of ids that cannot be re-run,
+# which is worse than not shipping it.
+#
+# What IS published: the composition and the scores, in
+# data/query_sets/perturbed.summary.json. The robustness result stands without
+# the corpus travelling with it, and
+#
+#   python scripts/perturbed_set.py --build
+#
+# rebuilds an equivalent set for anyone holding an authorised corpus.
+data/query_sets/perturbed.json
+data/query_sets/perturbed.local.json
+

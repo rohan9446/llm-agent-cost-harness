@@ -1,0 +1,20 @@
+{
+  "available": true,
+  "n_samples": 380,
+  "interval_s": 0.5,
+  "devices_under_test": "0",
+  "gpus": {
+    "0": {
+      "util_gpu_mean": 99.77894736842106,
+      "util_gpu_p50": 100.0,
+      "util_gpu_p95": 100.0,
+      "util_gpu_max": 100.0,
+      "busy_fraction": 1.0,
+      "mem_used_mb_max": 73261.0,
+      "mem_total_mb": 81920.0,
+      "temp_c_max": 71.0,
+      "power_w_mean": 298.6944736842105,
+      "sm_clock_mhz_mean": 1337.1315789473683
+    }
+  }
+}

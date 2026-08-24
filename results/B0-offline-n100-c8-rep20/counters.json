@@ -1,0 +1,14 @@
+{
+  "llm_calls": 196,
+  "llm_failures": 0,
+  "llm_calls_by_agent": {
+    "ParserAgent": 100,
+    "AdvisorAgent": 96
+  },
+  "requested_models": [
+    "meta-llama/Llama-3.1-8B-Instruct"
+  ],
+  "wall_s": 29.718985812738538,
+  "parser_kind": "llm",
+  "parser_tiers": {}
+}

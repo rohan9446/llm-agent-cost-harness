@@ -1,0 +1,310 @@
+{
+  "run": {
+    "run_id": "A1-offline-n100-c8-rep1",
+    "stage": "A1",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "concurrency": 8,
+    "prefix_caching": "off",
+    "snapshot_id": "154af01731fa65fc",
+    "snapshot_source": "yfinance",
+    "advisor_max_tokens": 400,
+    "vllm": "0.27.1",
+    "n_queries_ok": 100,
+    "n_queries_failed": 0,
+    "wall_s": 21.578445045277476
+  },
+  "reliability": {
+    "n_attempted": 100,
+    "n_ok": 100,
+    "workflow_failures": 0,
+    "workflow_failure_rate": 0.0,
+    "infrastructure_failures": 0,
+    "infrastructure_failure_rate": 0.0,
+    "_note": "infrastructure failures invalidate a run (gate: 0); workflow failures are a measured property of the baseline",
+    "workflow_failure_detail": [],
+    "infrastructure_failure_detail": []
+  },
+  "cost": {
+    "wall_s": 21.578445045277476,
+    "n_queries": 100,
+    "n_gpus": 1,
+    "usd_per_gpu_hour": 1.39,
+    "rate_source": "RunPod A100 PCIe 80GB on-demand, retrieved 2026-08-22",
+    "total_usd": 0.008331677392482136,
+    "cost_per_query_usd": 8.331677392482136e-05,
+    "basis": "allocated GPU time x rental-equivalent rate",
+    "n_attempted": 100,
+    "cost_per_attempted_query_usd": 8.331677392482136e-05,
+    "_attempted_note": "failed queries consumed GPU time too; dividing only by successes understates cost per query. Per-attempted is the headline figure: a system that answers 97 of 100 queries has not become cheaper by discarding the 3",
+    "per_query_distribution_usd": {
+      "n": 100,
+      "mean": 8.331677392482139e-05,
+      "p50": 8.321340706805635e-05,
+      "p90": 0.00010041939159253265,
+      "p95": 0.00010524953421269531,
+      "p99": 0.00011072324580137695,
+      "min": 4.857356985657037e-05,
+      "max": 0.00011685146504203581
+    },
+    "note": "total is measured; per-query is the total split by fitted token weight, never a per-request latency multiplication"
+  },
+  "token_weights": {
+    "_kind": "fitted attribution weights, NOT measured GPU-seconds/token",
+    "marginal_s_per_prefill_token": 7.990686260039208e-05,
+    "marginal_s_per_decode_token": 0.011628565982265596,
+    "fixed_request_overhead_s": 0.01615906566152401,
+    "fixed_decode_entry_s": 0.0,
+    "decode_to_prefill_ratio": 145.52649927477614,
+    "r2_prefill_fit": 0.6596717078072758,
+    "r2_decode_fit": 0.9999230851609046,
+    "n_calls": 198,
+    "fitted_at_concurrency": 1,
+    "note": "weights fitted on B0cal-offline-n100-c1-rep1"
+  },
+  "cost_by_stage": [
+    {
+      "stage": "AdvisorAgent",
+      "calls": 100,
+      "pct_of_llm_cost": 100.0,
+      "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
+      "attributed_usd": 0.008331677392482136,
+      "usd_per_query": 8.331677392482136e-05,
+      "prompt_tokens": 25335,
+      "completion_tokens": 12733,
+      "cached_tokens": 0
+    }
+  ],
+  "latency_s": {
+    "end_to_end": {
+      "n": 100,
+      "mean": 1.6687184850219636,
+      "p50": 1.6672076163813472,
+      "p90": 2.088626245968044,
+      "p95": 2.106727541424334,
+      "p99": 2.1795864114537835,
+      "min": 0.9432841343805194,
+      "max": 2.39300225302577
+    },
+    "ttft": {
+      "n": 100,
+      "mean": 0.060877752304077146,
+      "p50": 0.056758636608719826,
+      "p90": 0.0766547629609704,
+      "p95": 0.08968401420861483,
+      "p99": 0.15741617791354656,
+      "min": 0.034362235106527805,
+      "max": 0.16696092672646046
+    },
+    "tpot": {
+      "n": 100,
+      "mean": 0.012639929114208056,
+      "p50": 0.012660009892036517,
+      "p90": 0.012897182657562812,
+      "p95": 0.012975045125777563,
+      "p99": 0.0131165118701756,
+      "min": 0.011730585876783287,
+      "max": 0.013277932169726331
+    },
+    "by_llm_stage": {
+      "AdvisorAgent": {
+        "n": 100,
+        "mean": 1.6584047878254204,
+        "p50": 1.6555672632530332,
+        "p90": 2.0688114101067185,
+        "p95": 2.09104142524302,
+        "p99": 2.1749059492722154,
+        "min": 0.9388431319966912,
+        "max": 2.3847389137372375
+      }
+    }
+  },
+  "throughput": {
+    "queries_per_s": 4.634254219438549,
+    "llm_calls_per_s": 4.634254219438549,
+    "prompt_tokens_per_s": 1174.0883064947564,
+    "output_tokens_per_s": 590.0795897611105
+  },
+  "tokens": {
+    "prompt": 25335,
+    "completion": 12733,
+    "cached_prompt": 0,
+    "per_query_prompt": 253.35,
+    "per_query_completion": 127.33,
+    "output_share": 0.3344804034884943
+  },
+  "agents": {
+    "_note": "wall_s is inclusive of nested agent calls and does NOT sum to 100%; self_s is exclusive and does",
+    "AdvisorAgent": {
+      "calls": 100,
+      "wall_s": 165.8687190497294,
+      "self_s": 165.8687190497294,
+      "cpu_s": 3.2492573849999995,
+      "wall_s_per_query": 1.658687190497294,
+      "self_s_per_query": 1.658687190497294,
+      "cpu_s_per_query": 0.03249257385,
+      "pct_of_self_time": 99.47783426306252
+    },
+    "PriceAgent": {
+      "calls": 330,
+      "wall_s": 0.6173450537025928,
+      "self_s": 0.6173450537025928,
+      "cpu_s": 0.3674962129999994,
+      "wall_s_per_query": 0.0061734505370259285,
+      "self_s_per_query": 0.0061734505370259285,
+      "cpu_s_per_query": 0.003674962129999994,
+      "pct_of_self_time": 0.37024551275961726
+    },
+    "MetricsAgent": {
+      "calls": 330,
+      "wall_s": 0.7930035870522261,
+      "self_s": 0.17565853334963322,
+      "cpu_s": 0.4822595060000003,
+      "wall_s_per_query": 0.00793003587052226,
+      "self_s_per_query": 0.001756585333496332,
+      "cpu_s_per_query": 0.004822595060000003,
+      "pct_of_self_time": 0.10534916147877467
+    },
+    "RiskAgent": {
+      "calls": 100,
+      "wall_s": 0.05662729777395725,
+      "self_s": 0.05662729777395725,
+      "cpu_s": 0.05630500199999975,
+      "wall_s_per_query": 0.0005662729777395725,
+      "self_s_per_query": 0.0005662729777395725,
+      "cpu_s_per_query": 0.0005630500199999975,
+      "pct_of_self_time": 0.03396156294565656
+    },
+    "CascadeParserAgent": {
+      "calls": 100,
+      "wall_s": 0.02102500107139349,
+      "self_s": 0.02102500107139349,
+      "cpu_s": 0.021214960000000033,
+      "wall_s_per_query": 0.0002102500107139349,
+      "self_s_per_query": 0.0002102500107139349,
+      "cpu_s_per_query": 0.00021214960000000033,
+      "pct_of_self_time": 0.012609499753438926
+    }
+  },
+  "parser_eval": {
+    "_note": "shipped labels are Canyon Code's; derived labels come from our own alias map, which covers this corpus by construction and proves nothing about generalization",
+    "n_scored": 100,
+    "n_failed_scored": 0,
+    "_failed_note": "parser accuracy is computed over attempted queries, not successful ones: a parse error bad enough to crash the workflow is still a parse error, and excluding it would make the metric most optimistic exactly where the parser is worst",
+    "shipped": {
+      "holding_count": {
+        "n": 100,
+        "accuracy": 1.0
+      },
+      "lookback_value": {
+        "n": 100,
+        "accuracy": 1.0
+      },
+      "lookback_stated_vs_unstated": {
+        "n": 100,
+        "accuracy": 1.0
+      }
+    },
+    "derived": {
+      "ticker_set": {
+        "n": 100,
+        "accuracy": 1.0
+      },
+      "weights_within_1e-3": {
+        "n": 100,
+        "accuracy": 1.0
+      },
+      "weight_max_abs_error_p95": 0.0,
+      "weight_l1_error_mean": 0.0,
+      "n_unresolvable_by_alias_map": 0,
+      "unresolvable_query_ids": []
+    },
+    "by_phrasing": {
+      "equal": {
+        "n": 23,
+        "count_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        },
+        "lookback_value_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        },
+        "weights_ok": {
+          "n": 23,
+          "accuracy": 1.0
+        }
+      },
+      "percent": {
+        "n": 63,
+        "count_ok": {
+          "n": 63,
+          "accuracy": 1.0
+        },
+        "lookback_value_ok": {
+          "n": 63,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 63,
+          "accuracy": 1.0
+        },
+        "weights_ok": {
+          "n": 63,
+          "accuracy": 1.0
+        }
+      },
+      "unweighted": {
+        "n": 14,
+        "count_ok": {
+          "n": 14,
+          "accuracy": 1.0
+        },
+        "lookback_value_ok": {
+          "n": 14,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 14,
+          "accuracy": 1.0
+        },
+        "weights_ok": {
+          "n": 14,
+          "accuracy": 1.0
+        }
+      }
+    },
+    "mismatches": []
+  },
+  "gpu": {
+    "available": true,
+    "n_samples": 41,
+    "interval_s": 0.5,
+    "devices_under_test": "0",
+    "gpus": {
+      "0": {
+        "util_gpu_mean": 100.0,
+        "util_gpu_p50": 100.0,
+        "util_gpu_p95": 100.0,
+        "util_gpu_max": 100.0,
+        "busy_fraction": 1.0,
+        "mem_used_mb_max": 73357.0,
+        "mem_total_mb": 81920.0,
+        "temp_c_max": 69.0,
+        "power_w_mean": 296.3580487804878,
+        "sm_clock_mhz_mean": 1317.439024390244
+      }
+    }
+  },
+  "llm_calls": {
+    "total": 100,
+    "ok": 100,
+    "errors": 0,
+    "by_agent": {
+      "AdvisorAgent": 100
+    }
+  }
+}

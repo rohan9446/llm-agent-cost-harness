@@ -1,0 +1,59 @@
+{
+  "n": 97,
+  "_scorer_sha256": "d3189fac2eea158c0b06317b8ab8828812693378192fcf39dfe5c4f619a63b3f",
+  "_gates": "truncation, topic coverage and numeric grounding -- all mechanical, so a brevity gain can be priced against them",
+  "truncated_briefings": 0,
+  "truncation_rate": 0.0,
+  "mean_words": 78.57731958762886,
+  "mean_sentences": 3.4742268041237114,
+  "all_topics_rate": 1.0,
+  "topic_rate": {
+    "return": 1.0,
+    "risk": 1.0,
+    "diversification": 1.0,
+    "concentration": 1.0
+  },
+  "mean_numbers_per_briefing": 5.814432989690721,
+  "_numbers_note": "figures only (percentages and decimals). Bare integers are counted separately: they are usually holding counts and ordinals, not claims about the portfolio's statistics.",
+  "mean_bare_integers": 0.6185567010309279,
+  "bare_integers_not_matching_a_metric": 0.4948453608247423,
+  "briefings_with_an_ungrounded_number": 0.061855670103092786,
+  "grounded_fraction_mean": 0.9918098510882015,
+  "grounded_fraction_pooled": 0.9893617021276596,
+  "_pooled_note": "pooled over all figures in the run; the mean above is over briefings and is sensitive to how many figures each contains",
+  "n_figures_total": 564,
+  "n_figures_ungrounded": 6,
+  "all_holdings_named_rate": 0.16494845360824742,
+  "worst_ungrounded": [
+    {
+      "ungrounded": [
+        "26.95%"
+      ],
+      "n_numbers": 6
+    },
+    {
+      "ungrounded": [
+        "26.5%"
+      ],
+      "n_numbers": 6
+    },
+    {
+      "ungrounded": [
+        "15.3%"
+      ],
+      "n_numbers": 9
+    },
+    {
+      "ungrounded": [
+        "7.3%"
+      ],
+      "n_numbers": 10
+    },
+    {
+      "ungrounded": [
+        "39.8%"
+      ],
+      "n_numbers": 8
+    }
+  ]
+}
