@@ -1,0 +1,134 @@
+[
+  {
+    "name": "llm_call_count",
+    "ok": true,
+    "detail": "1966 successful calls for 966 queries (expected >= 1932; retries and failed queries add more)",
+    "verifiable": true
+  },
+  {
+    "name": "stage_called::AdvisorAgent",
+    "ok": true,
+    "detail": "966 calls (need >= 966)",
+    "verifiable": true
+  },
+  {
+    "name": "stage_called::ParserAgent",
+    "ok": true,
+    "detail": "1000 calls (need >= 966)",
+    "verifiable": true
+  },
+  {
+    "name": "template_fallback_disabled",
+    "ok": true,
+    "detail": "ADVISOR_ALLOW_TEMPLATE was unset for this run (from the manifest)",
+    "verifiable": true
+  },
+  {
+    "name": "single_model_requested",
+    "ok": true,
+    "detail": "requested=['meta-llama/Llama-3.1-8B-Instruct'] declared='meta-llama/Llama-3.1-8B-Instruct'",
+    "verifiable": true
+  },
+  {
+    "name": "live_server_advertises_model",
+    "ok": true,
+    "detail": "reachable=True advertised=['meta-llama/Llama-3.1-8B-Instruct'] (asked the running server, not the launch record)",
+    "verifiable": true
+  },
+  {
+    "name": "prices_from_snapshot",
+    "ok": true,
+    "detail": "3276 reads, all from snapshot",
+    "verifiable": true
+  },
+  {
+    "name": "snapshot_is_real_data",
+    "ok": true,
+    "detail": "snapshot_source='yfinance' id='154af01731fa65fc'",
+    "verifiable": true
+  },
+  {
+    "name": "prefix_caching_matches_stage",
+    "ok": true,
+    "detail": "expected 'off', observed 'off' (from the server launch record)",
+    "verifiable": true
+  },
+  {
+    "name": "telemetry_scoped_to_server_gpus",
+    "ok": true,
+    "detail": "telemetry='0' server='0' -- on a shared box an unscoped sampler would fold other users' GPUs into gpu.json",
+    "verifiable": true
+  },
+  {
+    "name": "live_process_config_verified",
+    "ok": true,
+    "detail": "live process matches the record in full",
+    "verifiable": true
+  },
+  {
+    "name": "snapshot_checksums_verified",
+    "ok": true,
+    "detail": "every ticker file re-hashed against MANIFEST.json before the run",
+    "verifiable": true
+  },
+  {
+    "name": "infrastructure_failure_rate",
+    "ok": true,
+    "detail": "0/1000 = 0.00% (limit 0.00%) -- server, timeout or harness faults",
+    "verifiable": true
+  },
+  {
+    "name": "workflow_failure_rate",
+    "ok": true,
+    "detail": "34/1000 = 3.40% (cap 10.00%) -- parser/model errors, REPORTED as a baseline property, not a fault",
+    "verifiable": true
+  },
+  {
+    "name": "llm_calls_all_succeeded_first_time",
+    "ok": true,
+    "detail": "0 failed model call(s) (limit 0) -- a retried call still spent measured wall-clock, so it is an infrastructure fault even when the query it belonged to succeeded",
+    "verifiable": true
+  },
+  {
+    "name": "every_worker_warmed",
+    "ok": true,
+    "detail": "8/8 workers warmed, 0 warm-up failure(s) of 8 -- a cold worker puts client and TCP setup inside the first measured request on that thread",
+    "verifiable": true
+  },
+  {
+    "name": "query_set_frozen",
+    "ok": true,
+    "detail": "algorithms_1000 sha256=28da012c2deb31e9",
+    "verifiable": true
+  },
+  {
+    "name": "query_content_pinned",
+    "ok": true,
+    "detail": "queries sha256=142f4230ed2507f2 corpus sha256=7eda020337a52371 -- an id list pins which queries ran, not what they said, and the corpus is not in this repository for a reader to diff",
+    "verifiable": true
+  },
+  {
+    "name": "source_tree_pinned",
+    "ok": true,
+    "detail": "source sha256=81b2ee6cdb2c64a1 git_sha=28ba9c3 git_dirty=True",
+    "verifiable": true
+  },
+  {
+    "name": "parser_quality_scored",
+    "ok": true,
+    "detail": "parser_eval covers 993 of 1000 attempted queries (need >= 966 successful) -- the accuracy is reported, not gated; its ABSENCE is what is gated here",
+    "verifiable": true
+  },
+  {
+    "name": "parser_scored_every_attempt",
+    "ok": true,
+    "detail": "0 scored row(s) had no query text -- rescoring a redacted failures.jsonl silently excludes the parser's own errors and inflates the rate. Rehydrate from data/queries.json by query_id (scripts/rescore_parser.py does this) rather than accepting the higher number",
+    "verifiable": true
+  },
+  {
+    "name": "parser_scorer_pinned",
+    "ok": true,
+    "detail": "vocab c038cd09c585 scorer be6225013ad6 -- derived accuracy is a property of the alias map and the scorer, and neither was recorded anywhere before",
+    "verifiable": true
+  }
+]

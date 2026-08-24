@@ -1,0 +1,2566 @@
+{
+  "run": {
+    "run_id": "B0-offline-n1000-c8-rep4",
+    "stage": "B0",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "concurrency": 8,
+    "prefix_caching": "off",
+    "snapshot_id": "154af01731fa65fc",
+    "snapshot_source": "yfinance",
+    "advisor_max_tokens": 400,
+    "vllm": "0.27.1",
+    "n_queries_ok": 965,
+    "n_queries_failed": 35,
+    "wall_s": 291.7396422252059
+  },
+  "reliability": {
+    "n_attempted": 1000,
+    "n_ok": 965,
+    "workflow_failures": 35,
+    "workflow_failure_rate": 0.035,
+    "infrastructure_failures": 0,
+    "infrastructure_failure_rate": 0.0,
+    "_note": "infrastructure failures invalidate a run (gate: 0); workflow failures are a measured property of the baseline",
+    "workflow_failure_detail": [
+      {
+        "query_id": "75",
+        "error": "ParseError: no JSON object in model output: '{\"holdings\": {\"KO\": 1/3, \"PFE\": 1/3, \"QCOM\": 1/3}, \"lookback_days\": 180}'",
+        "parsed_holdings": []
+      },
+      {
+        "query_id": "81",
+        "error": "PipelineError: SnapshotMiss: T is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "PFE",
+          "AMD",
+          "T"
+        ]
+      },
+      {
+        "query_id": "95",
+        "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "MCD",
+          "JNJ",
+          "AMZN",
+          "KO",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "97",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "DIS",
+          "JPM",
+          "MA",
+          "SFM",
+          "V"
+        ]
+      },
+      {
+        "query_id": "106",
+        "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "MSFT",
+          "MCD",
+          "AAPL",
+          "DIS",
+          "QCOM"
+        ]
+      },
+      {
+        "query_id": "115",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "CVX",
+          "ORCL",
+          "JPM",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "148",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "AMD",
+          "SFM",
+          "XOM",
+          "JNJ"
+        ]
+      },
+      {
+        "query_id": "184",
+        "error": "PipelineError: SnapshotMiss: MCD is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "MCD",
+          "INTC",
+          "GOOGL",
+          "TSLA"
+        ]
+      },
+      {
+        "query_id": "192",
+        "error": "ParseError: no JSON object in model output: '{\"holdings\": {\"COST\", 0.25}, \"lookback_days\": 30}'",
+        "parsed_holdings": []
+      },
+      {
+        "query_id": "255",
+        "error": "PipelineError: SnapshotMiss: GOOG is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "KO",
+          "ORCL",
+          "TSLA",
+          "QCOM",
+          "GOOG",
+          "COST"
+        ]
+      },
+      {
+        "query_id": "272",
+        "error": "ParseError: no JSON object in model output: '{\"holdings\": {\"V\": 1/3, \"WMT\": 1/3, \"JPM\": 1/3}, \"lookback_days\": null}'",
+        "parsed_holdings": []
+      },
+      {
+        "query_id": "280",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "SFM",
+          "DIS",
+          "PEP"
+        ]
+      },
+      {
+        "query_id": "281",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "META",
+          "SFM",
+          "CSCO"
+        ]
+      },
+      {
+        "query_id": "314",
+        "error": "PipelineError: SnapshotMiss: BABA is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "AAPL",
+          "BABA",
+          "MA",
+          "PFE",
+          "XOM",
+          "CSCO"
+        ]
+      },
+      {
+        "query_id": "340",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "JNJ",
+          "ADBE",
+          "GOOGL",
+          "UNH",
+          "SFM",
+          "KO"
+        ]
+      },
+      {
+        "query_id": "344",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "AMZN",
+          "JNJ",
+          "NFLX",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "395",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "UNH",
+          "NVDA",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "394",
+        "error": "PipelineError: SnapshotMiss: SQ is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "TSLA",
+          "CVX",
+          "KO",
+          "SQ",
+          "NVDA",
+          "DIS"
+        ]
+      },
+      {
+        "query_id": "408",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "QCOM",
+          "NFLX",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "424",
+        "error": "PipelineError: SnapshotMiss: SFM is not in the frozen snapshot (snapshot). Either the parser produced a ticker outside the corpus vocabulary, or the snapshot needs rebuilding.",
+        "parsed_holdings": [
+          "DIS",
+          "SFM",
+          "CSCO"
+        ]
+      }
+    ],
+    "infrastructure_failure_detail": []
+  },
+  "cost": {
+    "wall_s": 291.7396422252059,
+    "n_queries": 965,
+    "n_gpus": 1,
+    "usd_per_gpu_hour": 1.39,
+    "rate_source": "RunPod A100 PCIe 80GB on-demand, retrieved 2026-08-22",
+    "total_usd": 0.11264391741473227,
+    "cost_per_query_usd": 0.00011672944809816816,
+    "basis": "allocated GPU time x rental-equivalent rate",
+    "n_attempted": 1000,
+    "cost_per_attempted_query_usd": 0.00011264391741473227,
+    "_headline_denominator": "attempted",
+    "_attempted_note": "failed queries consumed GPU time too; dividing only by successes understates cost per query. Per-attempted is the headline figure: a system that answers 97 of 100 queries has not become cheaper by discarding the 3",
+    "_denominator_choice": "Both are reported and they disagree only for B0, which is the only stage with failures -- A1 and A2 answer everything, so their two figures are identical. That asymmetry is exactly why the choice needs stating rather than assuming: per-SUCCESSFUL raises B0's cost and therefore ENLARGES the improvement this project is claiming (28.4% -> 30.8% for A1). Per-attempted is the headline because it is the denominator that makes the claim harder to support, and because the failure rate is already reported as its own column -- folding it into the cost as well would count it twice and turn 'cheaper AND more correct' into one fact wearing two hats.",
+    "per_query_distribution_usd": {
+      "n": 1000,
+      "mean": 0.00011264391741473223,
+      "p50": 0.0001139455270841135,
+      "p90": 0.00013895827274105753,
+      "p95": 0.00014609398566777917,
+      "p99": 0.00016224708006001357,
+      "min": 1.5252505090132592e-05,
+      "max": 0.00017795405116018717
+    },
+    "note": "total is measured; per-query is the total split by fitted token weight, never a per-request latency multiplication"
+  },
+  "token_weights": {
+    "_kind": "fitted attribution weights, NOT measured GPU-seconds/token",
+    "marginal_s_per_prefill_token": 7.885024136765192e-05,
+    "marginal_s_per_decode_token": 0.011613907280157326,
+    "fixed_request_overhead_s": 0.01650130964084004,
+    "fixed_decode_entry_s": 0.0,
+    "decode_to_prefill_ratio": 147.29070043052394,
+    "r2_prefill_fit": 0.6578157901404267,
+    "r2_decode_fit": 0.9999198411981419,
+    "n_calls": 196,
+    "fitted_at_concurrency": 1,
+    "raw_marginal_s_per_prefill_token": 7.885024136765192e-05,
+    "raw_marginal_s_per_decode_token": 0.011613907280157326,
+    "degenerate": false,
+    "fit_unusable": false,
+    "fit_problems": [],
+    "fit_fatal_problems": [],
+    "_degenerate_note": "coefficients are clamped to small positives so downstream arithmetic stays finite. When fit_problems is non-empty the clamped values are not a measurement of anything: the per-query cost DISTRIBUTION should be disregarded, though the measured total is unaffected because it is wall-clock x rate.",
+    "note": "weights fitted on B0cal-offline-n100-c1-rep4"
+  },
+  "cost_by_stage": [
+    {
+      "stage": "AdvisorAgent",
+      "calls": 965,
+      "pct_of_llm_cost": 71.89933154719213,
+      "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
+      "attributed_usd": 0.08099022364976366,
+      "usd_per_query": 8.392769290130949e-05,
+      "prompt_tokens": 247571,
+      "completion_tokens": 122400,
+      "cached_tokens": 0
+    },
+    {
+      "stage": "ParserAgent",
+      "calls": 1000,
+      "pct_of_llm_cost": 28.10066845280786,
+      "_meaning": "token-work-weighted share of measured GPU allocation, including fitted per-request overhead",
+      "attributed_usd": 0.03165369376496861,
+      "usd_per_query": 3.280175519685866e-05,
+      "prompt_tokens": 299713,
+      "completion_tokens": 46198,
+      "cached_tokens": 0
+    }
+  ],
+  "latency_s": {
+    "end_to_end": {
+      "n": 965,
+      "mean": 2.3831590179450464,
+      "p50": 2.364857092499733,
+      "p90": 2.855149084702134,
+      "p95": 3.0264351535588503,
+      "p99": 3.324271841906011,
+      "min": 1.3320648279041052,
+      "max": 3.626820418983698
+    },
+    "ttft": {
+      "n": 1965,
+      "mean": 0.05780368834951983,
+      "p50": 0.053603642620146275,
+      "p90": 0.07345494348555803,
+      "p95": 0.07884854357689619,
+      "p99": 0.09576574061065912,
+      "min": 0.040253352373838425,
+      "max": 0.1994297206401825
+    },
+    "tpot": {
+      "n": 1965,
+      "mean": 0.013257629573950665,
+      "p50": 0.01322595588862896,
+      "p90": 0.013873521623940304,
+      "p95": 0.014247839785336206,
+      "p99": 0.014898626713679647,
+      "min": 0.01170964219296972,
+      "max": 0.01588830805073182
+    },
+    "by_llm_stage": {
+      "AdvisorAgent": {
+        "n": 965,
+        "mean": 1.7166008499967311,
+        "p50": 1.704073111526668,
+        "p90": 2.0627381214872003,
+        "p95": 2.1786058507859707,
+        "p99": 2.3525658827275038,
+        "min": 0.9757478442043066,
+        "max": 2.786156689748168
+      },
+      "ParserAgent": {
+        "n": 1000,
+        "mean": 0.6610488080661744,
+        "p50": 0.6749276025220752,
+        "p90": 0.8682852787896991,
+        "p95": 0.934198958799243,
+        "p99": 1.355506000109017,
+        "min": 0.28944751992821693,
+        "max": 1.5617596376687288
+      }
+    }
+  },
+  "throughput": {
+    "queries_per_s": 3.307743824732179,
+    "llm_calls_per_s": 6.735457632744799,
+    "prompt_tokens_per_s": 1875.932923704379,
+    "output_tokens_per_s": 577.9056926033118
+  },
+  "tokens": {
+    "prompt": 547284,
+    "completion": 168598,
+    "cached_prompt": 0,
+    "per_query_prompt": 567.1336787564767,
+    "per_query_completion": 174.71295336787566,
+    "output_share": 0.23551088028473965
+  },
+  "agents": {
+    "_note": "wall_s is inclusive of nested agent calls and does NOT sum to 100%; self_s is exclusive and does",
+    "AdvisorAgent": {
+      "calls": 965,
+      "wall_s": 1656.767970226705,
+      "self_s": 1656.767970226705,
+      "cpu_s": 32.089940966000036,
+      "wall_s_per_query": 1.7168580002349276,
+      "self_s_per_query": 1.7168580002349276,
+      "cpu_s_per_query": 0.033253824835233196,
+      "pct_of_self_time": 71.28814734025887
+    },
+    "ParserAgent": {
+      "calls": 1000,
+      "wall_s": 661.4713989337906,
+      "self_s": 661.4713989337906,
+      "cpu_s": 13.675137397999983,
+      "wall_s_per_query": 0.685462589568695,
+      "self_s_per_query": 0.685462589568695,
+      "cpu_s_per_query": 0.014171126837305682,
+      "pct_of_self_time": 28.462084851934172
+    },
+    "PriceAgent": {
+      "calls": 3345,
+      "wall_s": 4.0995990093797445,
+      "self_s": 4.0995990093797445,
+      "cpu_s": 3.660612689999993,
+      "wall_s_per_query": 0.004248289128890927,
+      "self_s_per_query": 0.004248289128890927,
+      "cpu_s_per_query": 0.0037933810259067288,
+      "pct_of_self_time": 0.17639936519092167
+    },
+    "MetricsAgent": {
+      "calls": 3345,
+      "wall_s": 5.2564087035134435,
+      "self_s": 1.156809694133699,
+      "cpu_s": 4.808316604000008,
+      "wall_s_per_query": 0.005447055651309268,
+      "self_s_per_query": 0.0011987665224183408,
+      "cpu_s_per_query": 0.004982711506735759,
+      "pct_of_self_time": 0.04977572080220656
+    },
+    "RiskAgent": {
+      "calls": 965,
+      "wall_s": 0.5483052553609014,
+      "self_s": 0.5483052553609014,
+      "cpu_s": 0.546586185999997,
+      "wall_s_per_query": 0.0005681919744672553,
+      "self_s_per_query": 0.0005681919744672553,
+      "cpu_s_per_query": 0.0005664105554404114,
+      "pct_of_self_time": 0.023592721813820203
+    }
+  },
+  "parser_eval": {
+    "_note": "shipped labels are Canyon Code's; derived labels come from our own alias map, which covers this corpus by construction and proves nothing about generalization",
+    "_scorer_sha256": "be6225013ad628405309e2abc97a843dbcb580a5ae19217899e4328b3329bf60",
+    "_vocab_sha256": "c038cd09c585c3e3899813cb1834fd8e6d2996636267d13e10bc009b2beb0a53",
+    "_ruler_note": "derived ticker and weight accuracy is a property of this alias map and this scorer; both are hashed so two parser_eval.json files can be compared only when they were produced by the same ruler",
+    "n_scored": 993,
+    "n_rows_without_query_text": 0,
+    "_no_text_note": "rows whose query text was unavailable when this score was computed -- e.g. re-scoring a REDACTED failures.jsonl. They cannot be scored, and because they are disproportionately the parser's own errors, excluding them INFLATES accuracy. Any value above zero makes the derived rates below unusable; gated in validity.check_run as parser_scored_every_attempt.",
+    "n_failed_scored": 28,
+    "_failed_note": "parser accuracy is computed over attempted queries, not successful ones: a parse error bad enough to crash the workflow is still a parse error, and excluding it would make the metric most optimistic exactly where the parser is worst",
+    "shipped": {
+      "holding_count": {
+        "n": 993,
+        "accuracy": 0.9889224572004028
+      },
+      "lookback_value": {
+        "n": 993,
+        "accuracy": 1.0
+      },
+      "lookback_stated_vs_unstated": {
+        "n": 993,
+        "accuracy": 1.0
+      }
+    },
+    "derived": {
+      "ticker_set": {
+        "n": 993,
+        "accuracy": 0.9516616314199395
+      },
+      "weights_within_1e-3": {
+        "n": 993,
+        "accuracy": 0.9415911379657603
+      },
+      "weight_max_abs_error_p95": 0.10000000000000003,
+      "weight_l1_error_mean": 0.028025232096942458,
+      "n_unresolvable_by_alias_map": 0,
+      "unresolvable_query_ids": []
+    },
+    "by_phrasing": {
+      "equal": {
+        "n": 197,
+        "count_ok": {
+          "n": 197,
+          "accuracy": 0.9949238578680203
+        },
+        "lookback_value_ok": {
+          "n": 197,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 197,
+          "accuracy": 0.9746192893401016
+        },
+        "weights_ok": {
+          "n": 197,
+          "accuracy": 0.9593908629441624
+        }
+      },
+      "percent": {
+        "n": 620,
+        "count_ok": {
+          "n": 620,
+          "accuracy": 0.9887096774193549
+        },
+        "lookback_value_ok": {
+          "n": 620,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 620,
+          "accuracy": 0.9483870967741935
+        },
+        "weights_ok": {
+          "n": 620,
+          "accuracy": 0.9548387096774194
+        }
+      },
+      "unweighted": {
+        "n": 176,
+        "count_ok": {
+          "n": 176,
+          "accuracy": 0.9829545454545454
+        },
+        "lookback_value_ok": {
+          "n": 176,
+          "accuracy": 1.0
+        },
+        "ticker_set_ok": {
+          "n": 176,
+          "accuracy": 0.9375
+        },
+        "weights_ok": {
+          "n": 176,
+          "accuracy": 0.875
+        }
+      }
+    },
+    "mismatches": [
+      {
+        "query_id": "31",
+        "outcome": "ok",
+        "phrasing": "equal",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.25,
+        "weight_l1_error": 0.5,
+        "weights_expected": {
+          "CSCO": 0.25,
+          "ADBE": 0.25,
+          "MA": 0.25,
+          "XOM": 0.25
+        },
+        "weights_got": {
+          "CSCO": 0.25,
+          "AAPL": 0.0,
+          "MA": 0.25,
+          "XOM": 0.5
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "ADBE",
+          "CSCO",
+          "MA",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "CSCO",
+          "MA",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "114",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.39999999999999997,
+        "weights_expected": {
+          "JPM": 0.2,
+          "NVDA": 0.2,
+          "COST": 0.2,
+          "JNJ": 0.2,
+          "GOOGL": 0.2
+        },
+        "weights_got": {
+          "JPM": 0.25,
+          "NVDA": 0.25,
+          "COST": 0.25,
+          "JNJ": 0.25,
+          "GOOGL": 0.0
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "COST",
+          "GOOGL",
+          "JNJ",
+          "JPM",
+          "NVDA"
+        ],
+        "tickers_got": [
+          "COST",
+          "GOOGL",
+          "JNJ",
+          "JPM",
+          "NVDA"
+        ]
+      },
+      {
+        "query_id": "119",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.34,
+        "weight_l1_error": 0.68,
+        "weights_expected": {
+          "GOOGL": 0.14,
+          "ADBE": 0.34,
+          "AMD": 0.23,
+          "MSFT": 0.21,
+          "CVX": 0.08
+        },
+        "weights_got": {
+          "GOOGL": 0.14,
+          "AAPL": 0.34,
+          "AMD": 0.23,
+          "MSFT": 0.21,
+          "CVX": 0.08
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "AMD",
+          "CVX",
+          "GOOGL",
+          "MSFT"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMD",
+          "CVX",
+          "GOOGL",
+          "MSFT"
+        ]
+      },
+      {
+        "query_id": "154",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "KO": 0.16666666666666666,
+          "PEP": 0.16666666666666666,
+          "V": 0.16666666666666666,
+          "JPM": 0.16666666666666666,
+          "META": 0.16666666666666666,
+          "DIS": 0.16666666666666666
+        },
+        "weights_got": {
+          "KO": 0.2,
+          "PEP": 0.2,
+          "V": 0.2,
+          "JPM": 0.2,
+          "META": 0.2,
+          "DIS": 0.0
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "DIS",
+          "JPM",
+          "KO",
+          "META",
+          "PEP",
+          "V"
+        ],
+        "tickers_got": [
+          "DIS",
+          "JPM",
+          "KO",
+          "META",
+          "PEP",
+          "V"
+        ]
+      },
+      {
+        "query_id": "162",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.39999999999999997,
+        "weights_expected": {
+          "AAPL": 0.2,
+          "INTC": 0.2,
+          "COST": 0.2,
+          "XOM": 0.2,
+          "AMZN": 0.2
+        },
+        "weights_got": {
+          "AAPL": 0.25,
+          "INTC": 0.25,
+          "COST": 0.25,
+          "XOM": 0.25,
+          "AMZN": 0.0
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AAPL",
+          "AMZN",
+          "COST",
+          "INTC",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMZN",
+          "COST",
+          "INTC",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "166",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.06000000000000001,
+        "weight_l1_error": 0.12000000000000002,
+        "weights_expected": {
+          "COST": 0.08,
+          "AAPL": 0.23,
+          "AMD": 0.55,
+          "CVX": 0.14
+        },
+        "weights_got": {
+          "CVX": 0.08,
+          "AMD": 0.55,
+          "AAPL": 0.23,
+          "COST": 0.14
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "AAPL",
+          "AMD",
+          "COST",
+          "CVX"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMD",
+          "COST",
+          "CVX"
+        ]
+      },
+      {
+        "query_id": "174",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.3,
+        "weight_l1_error": 0.6000000000000001,
+        "weights_expected": {
+          "ADBE": 0.3,
+          "MSFT": 0.27,
+          "NFLX": 0.13,
+          "UNH": 0.3
+        },
+        "weights_got": {
+          "AAPL": 0.27,
+          "MSFT": 0.27,
+          "NFLX": 0.13,
+          "UNH": 0.33
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "ADBE",
+          "MSFT",
+          "NFLX",
+          "UNH"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "MSFT",
+          "NFLX",
+          "UNH"
+        ]
+      },
+      {
+        "query_id": "182",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.36000000000000004,
+        "weight_l1_error": 0.72,
+        "weights_expected": {
+          "BAC": 0.6,
+          "INTC": 0.04,
+          "AMD": 0.36
+        },
+        "weights_got": {
+          "BAC": 0.6,
+          "INTC": 0.4,
+          "AMD": 0.0
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "AMD",
+          "BAC",
+          "INTC"
+        ],
+        "tickers_got": [
+          "AMD",
+          "BAC",
+          "INTC"
+        ]
+      },
+      {
+        "query_id": "188",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "AAPL": 0.16666666666666666,
+          "PEP": 0.16666666666666666,
+          "CRM": 0.16666666666666666,
+          "PFE": 0.16666666666666666,
+          "JNJ": 0.16666666666666666,
+          "MA": 0.16666666666666666
+        },
+        "weights_got": {
+          "AAPL": 0.2,
+          "PFE": 0.2,
+          "JNJ": 0.2,
+          "MA": 0.2,
+          "PEP": 0.2
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AAPL",
+          "CRM",
+          "JNJ",
+          "MA",
+          "PEP",
+          "PFE"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "JNJ",
+          "MA",
+          "PEP",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "218",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": true,
+        "weight_max_abs_error": 0.0,
+        "weight_l1_error": 0.0,
+        "weights_expected": {
+          "ADBE": 0.32,
+          "CVX": 0.1,
+          "GOOGL": 0.09,
+          "PFE": 0.36,
+          "QCOM": 0.11,
+          "NFLX": 0.02
+        },
+        "weights_got": {
+          "AAPL": 0.0,
+          "ADBE": 0.32,
+          "CVX": 0.1,
+          "GOOGL": 0.09,
+          "PFE": 0.36,
+          "QCOM": 0.11,
+          "NFLX": 0.02
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 7,
+        "tickers_expected": [
+          "ADBE",
+          "CVX",
+          "GOOGL",
+          "NFLX",
+          "PFE",
+          "QCOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "ADBE",
+          "CVX",
+          "GOOGL",
+          "NFLX",
+          "PFE",
+          "QCOM"
+        ]
+      },
+      {
+        "query_id": "220",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.39999999999999997,
+        "weights_expected": {
+          "ORCL": 0.2,
+          "WMT": 0.2,
+          "V": 0.2,
+          "TSLA": 0.2,
+          "MA": 0.2
+        },
+        "weights_got": {
+          "ORCL": 0.25,
+          "WMT": 0.25,
+          "V": 0.25,
+          "TSLA": 0.25,
+          "MA": 0.0
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "MA",
+          "ORCL",
+          "TSLA",
+          "V",
+          "WMT"
+        ],
+        "tickers_got": [
+          "MA",
+          "ORCL",
+          "TSLA",
+          "V",
+          "WMT"
+        ]
+      },
+      {
+        "query_id": "221",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.09999999999999998,
+        "weight_l1_error": 0.2,
+        "weights_expected": {
+          "BRK.B": 0.2,
+          "MSFT": 0.2,
+          "AMZN": 0.2,
+          "CVX": 0.2,
+          "ORCL": 0.2
+        },
+        "weights_got": {
+          "BRK.B": 0.2,
+          "MSFT": 0.3,
+          "AMZN": 0.2,
+          "CVX": 0.15,
+          "ORCL": 0.15
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AMZN",
+          "BRK.B",
+          "CVX",
+          "MSFT",
+          "ORCL"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "BRK.B",
+          "CVX",
+          "MSFT",
+          "ORCL"
+        ]
+      },
+      {
+        "query_id": "304",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.33,
+        "weight_l1_error": 0.66,
+        "weights_expected": {
+          "JNJ": 0.67,
+          "ADBE": 0.33
+        },
+        "weights_got": {
+          "JNJ": 0.67,
+          "AAPL": 0.33
+        },
+        "n_holdings_expected": 2,
+        "n_holdings_got": 2,
+        "tickers_expected": [
+          "ADBE",
+          "JNJ"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "JNJ"
+        ]
+      },
+      {
+        "query_id": "311",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.10000000000000003,
+        "weight_l1_error": 0.2000000000000001,
+        "weights_expected": {
+          "CRM": 0.2,
+          "JNJ": 0.2,
+          "COST": 0.2,
+          "AMZN": 0.2,
+          "BRK.B": 0.2
+        },
+        "weights_got": {
+          "AMZN": 0.20000000000000004,
+          "BRK.B": 0.20000000000000004,
+          "COST": 0.30000000000000004,
+          "JNJ": 0.20000000000000004,
+          "CRM": 0.10000000000000002
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AMZN",
+          "BRK.B",
+          "COST",
+          "CRM",
+          "JNJ"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "BRK.B",
+          "COST",
+          "CRM",
+          "JNJ"
+        ]
+      },
+      {
+        "query_id": "352",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": true,
+        "weight_max_abs_error": 0.0,
+        "weight_l1_error": 0.0,
+        "weights_expected": {
+          "AMD": 0.36,
+          "ADBE": 0.43,
+          "WMT": 0.09,
+          "MA": 0.12
+        },
+        "weights_got": {
+          "AMD": 0.36,
+          "AAPL": 0.0,
+          "ADBE": 0.43,
+          "WMT": 0.09,
+          "MA": 0.12
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "AMD",
+          "MA",
+          "WMT"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "ADBE",
+          "AMD",
+          "MA",
+          "WMT"
+        ]
+      },
+      {
+        "query_id": "365",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16,
+        "weight_l1_error": 0.32,
+        "weights_expected": {
+          "ADBE": 0.16,
+          "JNJ": 0.74,
+          "BRK.B": 0.1
+        },
+        "weights_got": {
+          "AAPL": 0.0,
+          "JNJ": 0.8809523809523809,
+          "BRK.B": 0.11904761904761905
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "ADBE",
+          "BRK.B",
+          "JNJ"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "BRK.B",
+          "JNJ"
+        ]
+      },
+      {
+        "query_id": "488",
+        "outcome": "ok",
+        "phrasing": "equal",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.07500000000000001,
+        "weight_l1_error": 0.3,
+        "weights_expected": {
+          "MA": 0.2,
+          "PFE": 0.2,
+          "ORCL": 0.2,
+          "BRK.B": 0.2,
+          "KO": 0.2
+        },
+        "weights_got": {
+          "KO": 0.25,
+          "PFE": 0.25,
+          "ORCL": 0.25,
+          "BRK.B": 0.125,
+          "MA": 0.125
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "BRK.B",
+          "KO",
+          "MA",
+          "ORCL",
+          "PFE"
+        ],
+        "tickers_got": [
+          "BRK.B",
+          "KO",
+          "MA",
+          "ORCL",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "511",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "BRK.B": 0.16666666666666666,
+          "GOOGL": 0.16666666666666666,
+          "DIS": 0.16666666666666666,
+          "JPM": 0.16666666666666666,
+          "CSCO": 0.16666666666666666,
+          "AAPL": 0.16666666666666666
+        },
+        "weights_got": {
+          "AAPL": 0.2,
+          "BRK.B": 0.2,
+          "CSCO": 0.2,
+          "DIS": 0.2,
+          "JPM": 0.2
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AAPL",
+          "BRK.B",
+          "CSCO",
+          "DIS",
+          "GOOGL",
+          "JPM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "BRK.B",
+          "CSCO",
+          "DIS",
+          "JPM"
+        ]
+      },
+      {
+        "query_id": "534",
+        "outcome": "ok",
+        "phrasing": "equal",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "KO": 0.16666666666666666,
+          "JNJ": 0.16666666666666666,
+          "AMZN": 0.16666666666666666,
+          "V": 0.16666666666666666,
+          "DIS": 0.16666666666666666,
+          "PEP": 0.16666666666666666
+        },
+        "weights_got": {
+          "KO": 0.2,
+          "JNJ": 0.2,
+          "AMZN": 0.2,
+          "V": 0.2,
+          "DIS": 0.2,
+          "PEP": 0.0
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "AMZN",
+          "DIS",
+          "JNJ",
+          "KO",
+          "PEP",
+          "V"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "DIS",
+          "JNJ",
+          "KO",
+          "PEP",
+          "V"
+        ]
+      },
+      {
+        "query_id": "535",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "JPM": 0.16666666666666666,
+          "TSLA": 0.16666666666666666,
+          "XOM": 0.16666666666666666,
+          "V": 0.16666666666666666,
+          "AMZN": 0.16666666666666666,
+          "NFLX": 0.16666666666666666
+        },
+        "weights_got": {
+          "JPM": 0.2,
+          "TSLA": 0.2,
+          "XOM": 0.2,
+          "V": 0.2,
+          "AMZN": 0.2,
+          "NFLX": 0.0
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "AMZN",
+          "JPM",
+          "NFLX",
+          "TSLA",
+          "V",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "JPM",
+          "NFLX",
+          "TSLA",
+          "V",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "575",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.39999999999999997,
+        "weights_expected": {
+          "UNH": 0.2,
+          "PEP": 0.2,
+          "CRM": 0.2,
+          "AMD": 0.2,
+          "COST": 0.2
+        },
+        "weights_got": {
+          "UNH": 0.25,
+          "PEP": 0.25,
+          "CRM": 0.25,
+          "AMD": 0.25,
+          "COST": 0.0
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AMD",
+          "COST",
+          "CRM",
+          "PEP",
+          "UNH"
+        ],
+        "tickers_got": [
+          "AMD",
+          "COST",
+          "CRM",
+          "PEP",
+          "UNH"
+        ]
+      },
+      {
+        "query_id": "600",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.06,
+        "weight_l1_error": 0.12000000000000002,
+        "weights_expected": {
+          "AMZN": 0.16,
+          "CRM": 0.06,
+          "WMT": 0.59,
+          "MSFT": 0.19
+        },
+        "weights_got": {
+          "AMZN": 0.17021276595744683,
+          "WMT": 0.6276595744680851,
+          "MSFT": 0.2021276595744681
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "AMZN",
+          "CRM",
+          "MSFT",
+          "WMT"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "MSFT",
+          "WMT"
+        ]
+      },
+      {
+        "query_id": "603",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.4,
+        "weights_expected": {
+          "ADBE": 0.2,
+          "PEP": 0.2,
+          "ORCL": 0.2,
+          "JNJ": 0.2,
+          "BAC": 0.2
+        },
+        "weights_got": {
+          "AAPL": 0.2,
+          "PEP": 0.2,
+          "ORCL": 0.2,
+          "JNJ": 0.2,
+          "BAC": 0.2
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "BAC",
+          "JNJ",
+          "ORCL",
+          "PEP"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "BAC",
+          "JNJ",
+          "ORCL",
+          "PEP"
+        ]
+      },
+      {
+        "query_id": "706",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": true,
+        "weight_max_abs_error": 0.0,
+        "weight_l1_error": 0.0,
+        "weights_expected": {
+          "ADBE": 0.3,
+          "MSFT": 0.27,
+          "ORCL": 0.21,
+          "UNH": 0.22
+        },
+        "weights_got": {
+          "AAPL": 0.0,
+          "MSFT": 0.27,
+          "ORCL": 0.21,
+          "UNH": 0.22,
+          "ADBE": 0.3
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "MSFT",
+          "ORCL",
+          "UNH"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "ADBE",
+          "MSFT",
+          "ORCL",
+          "UNH"
+        ]
+      },
+      {
+        "query_id": "720",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.25,
+        "weight_l1_error": 0.49999999999999994,
+        "weights_expected": {
+          "COST": 0.25,
+          "AMZN": 0.25,
+          "JNJ": 0.25,
+          "ORCL": 0.25
+        },
+        "weights_got": {
+          "AMZN": 0.3333333333333333,
+          "COST": 0.3333333333333333,
+          "JNJ": 0.3333333333333333,
+          "ORCL": 0.0
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "AMZN",
+          "COST",
+          "JNJ",
+          "ORCL"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "COST",
+          "JNJ",
+          "ORCL"
+        ]
+      },
+      {
+        "query_id": "723",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": true,
+        "weight_max_abs_error": 0.0,
+        "weight_l1_error": 0.0,
+        "weights_expected": {
+          "ADBE": 0.48,
+          "CRM": 0.09,
+          "CVX": 0.27,
+          "V": 0.16
+        },
+        "weights_got": {
+          "AAPL": 0.0,
+          "ADBE": 0.48,
+          "CVX": 0.27,
+          "V": 0.16,
+          "CRM": 0.09
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "CRM",
+          "CVX",
+          "V"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "ADBE",
+          "CRM",
+          "CVX",
+          "V"
+        ]
+      },
+      {
+        "query_id": "739",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "CSCO": 0.16666666666666666,
+          "CRM": 0.16666666666666666,
+          "NFLX": 0.16666666666666666,
+          "INTC": 0.16666666666666666,
+          "CVX": 0.16666666666666666,
+          "NVDA": 0.16666666666666666
+        },
+        "weights_got": {
+          "CSCO": 0.2,
+          "CRM": 0.2,
+          "NFLX": 0.2,
+          "INTC": 0.2,
+          "CVX": 0.2,
+          "NVDA": 0.0
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "CRM",
+          "CSCO",
+          "CVX",
+          "INTC",
+          "NFLX",
+          "NVDA"
+        ],
+        "tickers_got": [
+          "CRM",
+          "CSCO",
+          "CVX",
+          "INTC",
+          "NFLX",
+          "NVDA"
+        ]
+      },
+      {
+        "query_id": "741",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666666,
+        "weight_l1_error": 0.33333333333333337,
+        "weights_expected": {
+          "GOOGL": 0.16666666666666666,
+          "KO": 0.16666666666666666,
+          "CSCO": 0.16666666666666666,
+          "PEP": 0.16666666666666666,
+          "JNJ": 0.16666666666666666,
+          "ORCL": 0.16666666666666666
+        },
+        "weights_got": {
+          "GOOGL": 0.2,
+          "KO": 0.2,
+          "CSCO": 0.2,
+          "PEP": 0.2,
+          "JNJ": 0.2,
+          "ORCL": 0.0
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "CSCO",
+          "GOOGL",
+          "JNJ",
+          "KO",
+          "ORCL",
+          "PEP"
+        ],
+        "tickers_got": [
+          "CSCO",
+          "GOOGL",
+          "JNJ",
+          "KO",
+          "ORCL",
+          "PEP"
+        ]
+      },
+      {
+        "query_id": "767",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.02,
+        "weight_l1_error": 0.04,
+        "weights_expected": {
+          "AMD": 0.27,
+          "ADBE": 0.02,
+          "CVX": 0.06,
+          "CSCO": 0.07,
+          "XOM": 0.15,
+          "WMT": 0.43
+        },
+        "weights_got": {
+          "AMD": 0.27,
+          "AAPL": 0.02,
+          "CVX": 0.06,
+          "CSCO": 0.07,
+          "XOM": 0.15,
+          "WMT": 0.43
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "ADBE",
+          "AMD",
+          "CSCO",
+          "CVX",
+          "WMT",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMD",
+          "CSCO",
+          "CVX",
+          "WMT",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "834",
+        "outcome": "ok",
+        "phrasing": "equal",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.25,
+        "weight_l1_error": 0.5,
+        "weights_expected": {
+          "ADBE": 0.25,
+          "NFLX": 0.25,
+          "JNJ": 0.25,
+          "CVX": 0.25
+        },
+        "weights_got": {
+          "AAPL": 0.25,
+          "NFLX": 0.25,
+          "JNJ": 0.25,
+          "CVX": 0.25
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "ADBE",
+          "CVX",
+          "JNJ",
+          "NFLX"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "CVX",
+          "JNJ",
+          "NFLX"
+        ]
+      },
+      {
+        "query_id": "829",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": true,
+        "weight_max_abs_error": 0.0,
+        "weight_l1_error": 0.0,
+        "weights_expected": {
+          "MSFT": 0.36,
+          "JPM": 0.03,
+          "CVX": 0.15,
+          "AAPL": 0.39,
+          "NVDA": 0.07
+        },
+        "weights_got": {
+          "AAPL": 0.39,
+          "BRK.B": 0.0,
+          "CVX": 0.15,
+          "JPM": 0.03,
+          "MSFT": 0.36,
+          "NVDA": 0.07
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "AAPL",
+          "CVX",
+          "JPM",
+          "MSFT",
+          "NVDA"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "BRK.B",
+          "CVX",
+          "JPM",
+          "MSFT",
+          "NVDA"
+        ]
+      },
+      {
+        "query_id": "830",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.09999999999999998,
+        "weight_l1_error": 0.2,
+        "weights_expected": {
+          "XOM": 0.2,
+          "AMZN": 0.2,
+          "AAPL": 0.2,
+          "NFLX": 0.2,
+          "MSFT": 0.2
+        },
+        "weights_got": {
+          "XOM": 0.2,
+          "AMZN": 0.3,
+          "AAPL": 0.2,
+          "NFLX": 0.15,
+          "MSFT": 0.15
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AAPL",
+          "AMZN",
+          "MSFT",
+          "NFLX",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMZN",
+          "MSFT",
+          "NFLX",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "861",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.66,
+        "weight_l1_error": 1.34,
+        "weights_expected": {
+          "ADBE": 0.66,
+          "MSFT": 0.26,
+          "AMZN": 0.03,
+          "UNH": 0.05
+        },
+        "weights_got": {
+          "AAPL": 0.25,
+          "AMZN": 0.25,
+          "MSFT": 0.25,
+          "UNH": 0.25
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "ADBE",
+          "AMZN",
+          "MSFT",
+          "UNH"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "AMZN",
+          "MSFT",
+          "UNH"
+        ]
+      },
+      {
+        "query_id": "893",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.21333333333333337,
+        "weight_l1_error": 0.4266666666666667,
+        "weights_expected": {
+          "ADBE": 0.11,
+          "WMT": 0.64,
+          "TSLA": 0.25
+        },
+        "weights_got": {
+          "AAPL": 0.0,
+          "WMT": 0.8533333333333334,
+          "TSLA": 0.14666666666666667
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "ADBE",
+          "TSLA",
+          "WMT"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "TSLA",
+          "WMT"
+        ]
+      },
+      {
+        "query_id": "948",
+        "outcome": "ok",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.4,
+        "weights_expected": {
+          "GOOGL": 0.2,
+          "PFE": 0.2,
+          "UNH": 0.2,
+          "META": 0.2,
+          "ADBE": 0.2
+        },
+        "weights_got": {
+          "AAPL": 0.2,
+          "PFE": 0.2,
+          "UNH": 0.2,
+          "META": 0.2,
+          "ADBE": 0.2
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "GOOGL",
+          "META",
+          "PFE",
+          "UNH"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "ADBE",
+          "META",
+          "PFE",
+          "UNH"
+        ]
+      },
+      {
+        "query_id": "949",
+        "outcome": "ok",
+        "phrasing": "equal",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": true,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.39999999999999997,
+        "weights_expected": {
+          "AMD": 0.2,
+          "ADBE": 0.2,
+          "TSLA": 0.2,
+          "CVX": 0.2,
+          "XOM": 0.2
+        },
+        "weights_got": {
+          "AMD": 0.25,
+          "ADBE": 0.25,
+          "TSLA": 0.25,
+          "CVX": 0.25,
+          "XOM": 0.0
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "ADBE",
+          "AMD",
+          "CVX",
+          "TSLA",
+          "XOM"
+        ],
+        "tickers_got": [
+          "ADBE",
+          "AMD",
+          "CVX",
+          "TSLA",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "988",
+        "outcome": "ok",
+        "phrasing": "percent",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": true,
+        "weight_max_abs_error": 0.0,
+        "weight_l1_error": 0.0,
+        "weights_expected": {
+          "TSLA": 0.48,
+          "ADBE": 0.45,
+          "QCOM": 0.07
+        },
+        "weights_got": {
+          "TSLA": 0.48,
+          "AAPL": 0.0,
+          "ADBE": 0.45,
+          "QCOM": 0.07
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "ADBE",
+          "QCOM",
+          "TSLA"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "ADBE",
+          "QCOM",
+          "TSLA"
+        ]
+      },
+      {
+        "query_id": "81",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.26,
+        "weight_l1_error": 0.52,
+        "weights_expected": {
+          "MA": 0.26,
+          "PFE": 0.13,
+          "AMD": 0.61
+        },
+        "weights_got": {
+          "PFE": 0.13,
+          "AMD": 0.61,
+          "T": 0.26
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "AMD",
+          "MA",
+          "PFE"
+        ],
+        "tickers_got": [
+          "AMD",
+          "PFE",
+          "T"
+        ]
+      },
+      {
+        "query_id": "95",
+        "outcome": "failed",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.4,
+        "weights_expected": {
+          "MA": 0.2,
+          "JNJ": 0.2,
+          "AMZN": 0.2,
+          "KO": 0.2,
+          "PFE": 0.2
+        },
+        "weights_got": {
+          "MCD": 0.2,
+          "JNJ": 0.2,
+          "AMZN": 0.2,
+          "KO": 0.2,
+          "PFE": 0.2
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AMZN",
+          "JNJ",
+          "KO",
+          "MA",
+          "PFE"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "JNJ",
+          "KO",
+          "MCD",
+          "PFE"
+        ]
+      },
+      {
+        "query_id": "97",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.14,
+        "weight_l1_error": 0.28,
+        "weights_expected": {
+          "MA": 0.13,
+          "JPM": 0.28,
+          "CRM": 0.14,
+          "DIS": 0.31,
+          "V": 0.14
+        },
+        "weights_got": {
+          "DIS": 0.31,
+          "JPM": 0.28,
+          "MA": 0.13,
+          "SFM": 0.14,
+          "V": 0.14
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "CRM",
+          "DIS",
+          "JPM",
+          "MA",
+          "V"
+        ],
+        "tickers_got": [
+          "DIS",
+          "JPM",
+          "MA",
+          "SFM",
+          "V"
+        ]
+      },
+      {
+        "query_id": "106",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.11,
+        "weight_l1_error": 0.22,
+        "weights_expected": {
+          "MSFT": 0.41,
+          "MA": 0.11,
+          "AAPL": 0.03,
+          "DIS": 0.19,
+          "QCOM": 0.26
+        },
+        "weights_got": {
+          "MSFT": 0.41,
+          "MCD": 0.11,
+          "AAPL": 0.03,
+          "DIS": 0.19,
+          "QCOM": 0.26
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 5,
+        "tickers_expected": [
+          "AAPL",
+          "DIS",
+          "MA",
+          "MSFT",
+          "QCOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "DIS",
+          "MCD",
+          "MSFT",
+          "QCOM"
+        ]
+      },
+      {
+        "query_id": "115",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.05,
+        "weight_l1_error": 0.1,
+        "weights_expected": {
+          "CVX": 0.88,
+          "ORCL": 0.02,
+          "JPM": 0.05,
+          "CRM": 0.05
+        },
+        "weights_got": {
+          "CVX": 0.88,
+          "ORCL": 0.02,
+          "JPM": 0.05,
+          "SFM": 0.05
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "CRM",
+          "CVX",
+          "JPM",
+          "ORCL"
+        ],
+        "tickers_got": [
+          "CVX",
+          "JPM",
+          "ORCL",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "148",
+        "outcome": "failed",
+        "phrasing": "equal",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.25,
+        "weight_l1_error": 0.5,
+        "weights_expected": {
+          "AMD": 0.25,
+          "CRM": 0.25,
+          "XOM": 0.25,
+          "JNJ": 0.25
+        },
+        "weights_got": {
+          "AMD": 0.25,
+          "SFM": 0.25,
+          "XOM": 0.25,
+          "JNJ": 0.25
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "AMD",
+          "CRM",
+          "JNJ",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AMD",
+          "JNJ",
+          "SFM",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "184",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.32,
+        "weight_l1_error": 0.64,
+        "weights_expected": {
+          "MA": 0.32,
+          "INTC": 0.17,
+          "GOOGL": 0.24,
+          "TSLA": 0.27
+        },
+        "weights_got": {
+          "MCD": 0.32,
+          "INTC": 0.17,
+          "GOOGL": 0.24,
+          "TSLA": 0.27
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "GOOGL",
+          "INTC",
+          "MA",
+          "TSLA"
+        ],
+        "tickers_got": [
+          "GOOGL",
+          "INTC",
+          "MCD",
+          "TSLA"
+        ]
+      },
+      {
+        "query_id": "255",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.314527736131934,
+        "weight_l1_error": 0.6890554722638678,
+        "weights_expected": {
+          "COST": 0.05,
+          "GOOGL": 0.03,
+          "QCOM": 0.04,
+          "TSLA": 0.11,
+          "ORCL": 0.4,
+          "KO": 0.37
+        },
+        "weights_got": {
+          "KO": 0.05547226386806595,
+          "ORCL": 0.5997001499250374,
+          "TSLA": 0.16491754122938526,
+          "QCOM": 0.059970014992503734,
+          "GOOG": 0.0449775112443778,
+          "COST": 0.07496251874062967
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "COST",
+          "GOOGL",
+          "KO",
+          "ORCL",
+          "QCOM",
+          "TSLA"
+        ],
+        "tickers_got": [
+          "COST",
+          "GOOG",
+          "KO",
+          "ORCL",
+          "QCOM",
+          "TSLA"
+        ]
+      },
+      {
+        "query_id": "280",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16,
+        "weight_l1_error": 0.32,
+        "weights_expected": {
+          "CRM": 0.16,
+          "DIS": 0.72,
+          "PEP": 0.12
+        },
+        "weights_got": {
+          "SFM": 0.16,
+          "DIS": 0.72,
+          "PEP": 0.12
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "CRM",
+          "DIS",
+          "PEP"
+        ],
+        "tickers_got": [
+          "DIS",
+          "PEP",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "281",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.77,
+        "weight_l1_error": 1.54,
+        "weights_expected": {
+          "META": 0.12,
+          "CRM": 0.77,
+          "CSCO": 0.11
+        },
+        "weights_got": {
+          "META": 0.12,
+          "SFM": 0.77,
+          "CSCO": 0.11
+        },
+        "n_holdings_expected": 3,
+        "n_holdings_got": 3,
+        "tickers_expected": [
+          "CRM",
+          "CSCO",
+          "META"
+        ],
+        "tickers_got": [
+          "CSCO",
+          "META",
+          "SFM"
+        ]
+      },
+      {
+        "query_id": "314",
+        "outcome": "failed",
+        "phrasing": "equal",
+        "count_ok": false,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.2,
+        "weight_l1_error": 0.4,
+        "weights_expected": {
+          "GOOGL": 0.2,
+          "MA": 0.2,
+          "XOM": 0.2,
+          "PFE": 0.2,
+          "CSCO": 0.2
+        },
+        "weights_got": {
+          "AAPL": 0.2,
+          "BABA": 0.0,
+          "MA": 0.2,
+          "PFE": 0.2,
+          "XOM": 0.2,
+          "CSCO": 0.2
+        },
+        "n_holdings_expected": 5,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "CSCO",
+          "GOOGL",
+          "MA",
+          "PFE",
+          "XOM"
+        ],
+        "tickers_got": [
+          "AAPL",
+          "BABA",
+          "CSCO",
+          "MA",
+          "PFE",
+          "XOM"
+        ]
+      },
+      {
+        "query_id": "340",
+        "outcome": "failed",
+        "phrasing": "unweighted",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.16666666666666669,
+        "weight_l1_error": 0.3333333333333335,
+        "weights_expected": {
+          "JNJ": 0.16666666666666666,
+          "ADBE": 0.16666666666666666,
+          "GOOGL": 0.16666666666666666,
+          "UNH": 0.16666666666666666,
+          "CRM": 0.16666666666666666,
+          "KO": 0.16666666666666666
+        },
+        "weights_got": {
+          "JNJ": 0.16666666666666669,
+          "ADBE": 0.16666666666666669,
+          "GOOGL": 0.16666666666666669,
+          "UNH": 0.16666666666666669,
+          "SFM": 0.16666666666666669,
+          "KO": 0.16666666666666669
+        },
+        "n_holdings_expected": 6,
+        "n_holdings_got": 6,
+        "tickers_expected": [
+          "ADBE",
+          "CRM",
+          "GOOGL",
+          "JNJ",
+          "KO",
+          "UNH"
+        ],
+        "tickers_got": [
+          "ADBE",
+          "GOOGL",
+          "JNJ",
+          "KO",
+          "SFM",
+          "UNH"
+        ]
+      },
+      {
+        "query_id": "344",
+        "outcome": "failed",
+        "phrasing": "percent",
+        "count_ok": true,
+        "lookback_value_ok": true,
+        "lookback_stated_ok": true,
+        "ticker_set_ok": false,
+        "weights_ok": false,
+        "weight_max_abs_error": 0.15,
+        "weight_l1_error": 0.3,
+        "weights_expected": {
+          "CRM": 0.15,
+          "AMZN": 0.28,
+          "JNJ": 0.5,
+          "NFLX": 0.07
+        },
+        "weights_got": {
+          "AMZN": 0.28,
+          "JNJ": 0.5,
+          "NFLX": 0.07,
+          "SFM": 0.15
+        },
+        "n_holdings_expected": 4,
+        "n_holdings_got": 4,
+        "tickers_expected": [
+          "AMZN",
+          "CRM",
+          "JNJ",
+          "NFLX"
+        ],
+        "tickers_got": [
+          "AMZN",
+          "JNJ",
+          "NFLX",
+          "SFM"
+        ]
+      }
+    ]
+  },
+  "gpu": {
+    "available": true,
+    "n_samples": 547,
+    "interval_s": 0.5,
+    "devices_under_test": "0",
+    "gpus": {
+      "0": {
+        "util_gpu_mean": 100.0,
+        "util_gpu_p50": 100.0,
+        "util_gpu_p95": 100.0,
+        "util_gpu_max": 100.0,
+        "busy_fraction": 1.0,
+        "mem_used_mb_max": 73357.0,
+        "mem_total_mb": 81920.0,
+        "temp_c_max": 65.0,
+        "power_w_mean": 293.80632541133457,
+        "sm_clock_mhz_mean": 1305.9872029250457
+      }
+    }
+  },
+  "llm_calls": {
+    "total": 1965,
+    "ok": 1965,
+    "errors": 0,
+    "by_agent": {
+      "ParserAgent": 1000,
+      "AdvisorAgent": 965
+    }
+  }
+}
