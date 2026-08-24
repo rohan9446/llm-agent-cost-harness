@@ -367,6 +367,46 @@ and now two *versions* of a working scorer compared as one. The generalisation
 is not "check your metrics" — it is that an instrument deserves the same
 provenance discipline as a model weight.
 
+### Two correct fixes that composed into a false number
+
+The fifth instance is the one worth keeping, because neither half was a
+mistake.
+
+**Fix one:** parser accuracy was computed over successful queries only, which
+made it most flattering exactly where the parser was worst — a hallucinated
+ticker is what crashes the pipeline, so the parser's own errors were the rows
+being excluded. Failure rows were added to the scoring.
+
+**Fix two:** `failures.jsonl` carried the supplied query text, so the
+redaction policy stripped it.
+
+Each is right. Together they meant that re-scoring a redacted run fed empty
+strings to the expected-parse builder, which returned `None`, which put those
+rows back into the excluded bucket — the precise state fix one existed to end,
+restored by fix two through a door nobody was watching:
+
+```
+947 correct / 994 scored = 95.3%    as run, before redaction
+947 correct / 966 scored = 98.0%    rescored, 28 hallucinations dropped
+```
+
+The numerator never moved. B0's reported ticker accuracy rose 2.7 points
+because the parser's worst 28 cases were deleted from its own exam.
+
+It was caught because a published number changed with no measurement behind
+it, and that was treated as a reason for suspicion rather than as good news.
+Canyon Code's shipped `n_holdings` label settled it in minutes: it never
+touches our alias map, it was byte-identical across both scorings, and it
+confirmed the parser really had read *Mastercard* as **MCD**, *Salesforce* as
+**SFM** and *Alphabet* as **GOOG**.
+
+`parser_eval.json` now reports `n_rows_without_query_text`, `check_run` fails
+any run where it is non-zero, and `scripts/rescore_parser.py` rehydrates the
+text by `query_id` and refuses to start without the corpus. The general lesson
+is narrower and sharper than "check your metrics": **exclusion that correlates
+with the thing being measured is not a rounding detail.** Randomly missing
+rows cost precision; selectively missing rows manufacture a result.
+
 The last row is the one worth dwelling on. That audit passed four times while
 supplied query text was being published — in `failures.jsonl`, in
 `report.json`, as a transcribed list of the corpus's sentence openings, and

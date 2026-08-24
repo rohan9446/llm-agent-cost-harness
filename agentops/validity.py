@@ -510,6 +510,26 @@ def check_run(
         f"its ABSENCE is what is gated here",
     ))
     if parser:
+        # EXCLUSION THAT CORRELATES WITH THE MEASUREMENT.
+        #
+        # A row with no query text is not scoreable, and an unscoreable row
+        # leaves the denominator. That is fine when the missing rows are
+        # random and fatal when they are not -- and here they are the exact
+        # opposite of random: the parser's hallucinations are the rows that
+        # crash downstream, land in failures.jsonl, and get their query text
+        # removed by the redaction policy. Re-scoring afterwards dropped 28 of
+        # B0's worst cases and raised its reported ticker accuracy from 95.3%
+        # to 98.0% without a single measurement changing.
+        no_text = int(parser.get("n_rows_without_query_text", 0))
+        checks.append(Check(
+            "parser_scored_every_attempt",
+            no_text == 0,
+            f"{no_text} scored row(s) had no query text -- rescoring a redacted "
+            f"failures.jsonl silently excludes the parser's own errors and "
+            f"inflates the rate. Rehydrate from data/queries.json by query_id "
+            f"(scripts/rescore_parser.py does this) rather than accepting the "
+            f"higher number",
+        ))
         checks.append(Check(
             "parser_scorer_pinned",
             bool(parser.get("_vocab_sha256")) and bool(parser.get("_scorer_sha256")),

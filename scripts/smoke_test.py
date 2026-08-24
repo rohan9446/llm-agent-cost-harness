@@ -484,6 +484,31 @@ def main() -> int:
           < _s_ok["derived"]["ticker_set"]["accuracy"],
           f"{_s_all['derived']['ticker_set']['accuracy']:.2f} vs "
           f"{_s_ok['derived']['ticker_set']['accuracy']:.2f}")
+    # ---- exclusion that correlates with the measurement -------------------
+    #
+    # Redaction strips query text from failures.jsonl. Failures are
+    # disproportionately the parser's OWN errors -- a hallucinated ticker is
+    # what crashes the pipeline. Re-scoring the redacted file therefore drops
+    # the worst cases out of the denominator and raises the reported accuracy;
+    # it took B0 from 95.3% to 98.0% with nothing measured differently.
+    _redacted_fail = {"query_id": "q9", "query_redacted": True,
+                      "error": "PipelineError: SnapshotMiss: MCD",
+                      "parsed": {"holdings": {"MCD": 1.0}},
+                      "label": {"n_holdings": 1}}
+    _sc = _pe.score([_ok_row], _vocab, failures=[_redacted_fail])
+    check("a row with no query text is counted, not silently dropped",
+          _sc.get("n_rows_without_query_text", 0) >= 1,
+          f"n_rows_without_query_text={_sc.get('n_rows_without_query_text')}")
+    from agentops.validity import RunManifest as _RM2, check_run as _cr
+    _m2 = _RM2(run_id="t", stage="B0", n_queries=1, concurrency=1)
+    _names = {c.name: c for c in _cr(_m2, {"llm_calls": 0, "llm_failures": 0,
+                                           "llm_calls_by_agent": {}},
+                                     [], [], parser=_sc)}
+    check("unscoreable rows fail the run rather than flattering it",
+          _names["parser_scored_every_attempt"].ok is False,
+          "excluding the parser's hallucinations from its own accuracy is the "
+          "original bug of this module arriving by a new route")
+
     check("failure without a parse is not scored",
           _pe.score([_ok_row], _vocab,
                     failures=[{"query_id": "q3", "error": "APIError: 503"}]

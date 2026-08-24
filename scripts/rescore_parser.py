@@ -39,6 +39,47 @@ sys.path.insert(0, ROOT)
 from agentops import parser_eval                  # noqa: E402
 
 VOCAB = os.path.join(ROOT, "data", "vocab.json")
+CORPUS = os.path.join(ROOT, "data", "queries.json")
+
+
+def _corpus_text() -> dict[str, str]:
+    """query_id -> query text, for rehydrating redacted rows.
+
+    Without this, re-scoring is not merely incomplete, it is BIASED UPWARD.
+    redact_artifacts.py removes the query text from failures.jsonl, and the
+    failures are disproportionately the parser's own errors -- a hallucinated
+    ticker is what crashes the pipeline in the first place. Scoring the
+    redacted file drops exactly those rows out of the denominator, and B0's
+    derived ticker accuracy climbs from 95.3% to 98.0% with nothing measured
+    differently.
+
+    The corpus is present locally (and gitignored), so the text can be joined
+    back by id. The published artifacts stay redacted; only the scoring sees
+    the sentences, which is the same arrangement the run itself had.
+    """
+    if not os.path.exists(CORPUS):
+        return {}
+    try:
+        with open(CORPUS, encoding="utf-8") as fh:
+            return {str(q["id"]): q.get("query", "") for q in json.load(fh)}
+    except (OSError, json.JSONDecodeError, KeyError):
+        return {}
+
+
+def _rehydrate(rows: list[dict], text: dict[str, str]) -> tuple[list[dict], int]:
+    """Restore query text by id. Returns (rows, still_missing)."""
+    out, missing = [], 0
+    for r in rows:
+        if (r.get("query") or "").strip():
+            out.append(r)
+            continue
+        t = text.get(str(r.get("query_id", "")))
+        if t:
+            out.append({**r, "query": t})
+        else:
+            out.append(r)
+            missing += 1
+    return out, missing
 
 
 def _jsonl(path: str) -> list[dict]:
@@ -85,7 +126,16 @@ def main() -> int:
         return 1
     vocab = parser_eval.load_vocab(VOCAB)
     scorer, vsha = parser_eval.scorer_sha256(), parser_eval.vocab_sha256(VOCAB)
-    print(f"scorer {scorer[:16]}   vocab {vsha[:16]}\n")
+    text = _corpus_text()
+    if not text:
+        print(f"REFUSING: {CORPUS} is not present.\n"
+              f"Re-scoring without it reads redacted failure rows as empty, "
+              f"drops the parser's own errors from the denominator and reports "
+              f"a HIGHER accuracy than the truth. A rescore that cannot see "
+              f"the queries must not run at all.", file=sys.stderr)
+        return 1
+    print(f"scorer {scorer[:16]}   vocab {vsha[:16]}   "
+          f"corpus {len(text)} queries\n")
 
     hdr = f"{'run':<34}{'ticker set':>21}{'weights':>21}{'ruler':>9}"
     print(hdr)
@@ -101,6 +151,14 @@ def main() -> int:
         if not rows:
             continue
         fails = _jsonl(os.path.join(d, "failures.jsonl"))
+
+        # Rehydrate BEFORE scoring. This is the whole point of the script.
+        rows, miss_r = _rehydrate(rows, text)
+        fails, miss_f = _rehydrate(fails, text)
+        if miss_r or miss_f:
+            print(f"{name:<34}  SKIPPED: {miss_r + miss_f} row(s) have no "
+                  f"query text and no corpus entry to restore it from")
+            continue
 
         old = _json(os.path.join(d, "parser_eval.json")) or {}
         new = parser_eval.score(rows, vocab, failures=fails, vocab_path=VOCAB)

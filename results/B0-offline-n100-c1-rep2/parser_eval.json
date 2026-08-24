@@ -1,9 +1,11 @@
 {
   "_note": "shipped labels are Canyon Code's; derived labels come from our own alias map, which covers this corpus by construction and proves nothing about generalization",
-  "_scorer_sha256": "f87b528fd757891a8cb662e9ae6b41e74e2162b6123cb6c992c152b08d9da5e7",
+  "_scorer_sha256": "be6225013ad628405309e2abc97a843dbcb580a5ae19217899e4328b3329bf60",
   "_vocab_sha256": "c038cd09c585c3e3899813cb1834fd8e6d2996636267d13e10bc009b2beb0a53",
   "_ruler_note": "derived ticker and weight accuracy is a property of this alias map and this scorer; both are hashed so two parser_eval.json files can be compared only when they were produced by the same ruler",
   "n_scored": 100,
+  "n_rows_without_query_text": 0,
+  "_no_text_note": "rows whose query text was unavailable when this score was computed -- e.g. re-scoring a REDACTED failures.jsonl. They cannot be scored, and because they are disproportionately the parser's own errors, excluding them INFLATES accuracy. Any value above zero makes the derived rates below unusable; gated in validity.check_run as parser_scored_every_attempt.",
   "n_failed_scored": 2,
   "_failed_note": "parser accuracy is computed over attempted queries, not successful ones: a parse error bad enough to crash the workflow is still a parse error, and excluding it would make the metric most optimistic exactly where the parser is worst",
   "shipped": {
@@ -22,20 +24,17 @@
   },
   "derived": {
     "ticker_set": {
-      "n": 98,
-      "accuracy": 0.9897959183673469
+      "n": 100,
+      "accuracy": 0.97
     },
     "weights_within_1e-3": {
-      "n": 98,
-      "accuracy": 0.9897959183673469
+      "n": 100,
+      "accuracy": 0.97
     },
     "weight_max_abs_error_p95": 2.7755575615628914e-17,
-    "weight_l1_error_mean": 0.005306122448979603,
-    "n_unresolvable_by_alias_map": 2,
-    "unresolvable_query_ids": [
-      "95",
-      "97"
-    ]
+    "weight_l1_error_mean": 0.01200000000000001,
+    "n_unresolvable_by_alias_map": 0,
+    "unresolvable_query_ids": []
   },
   "by_phrasing": {
     "equal": {
@@ -68,12 +67,12 @@
         "accuracy": 1.0
       },
       "ticker_set_ok": {
-        "n": 62,
-        "accuracy": 0.9838709677419355
+        "n": 63,
+        "accuracy": 0.9682539682539683
       },
       "weights_ok": {
-        "n": 62,
-        "accuracy": 0.9838709677419355
+        "n": 63,
+        "accuracy": 0.9682539682539683
       }
     },
     "unweighted": {
@@ -87,12 +86,12 @@
         "accuracy": 1.0
       },
       "ticker_set_ok": {
-        "n": 13,
-        "accuracy": 1.0
+        "n": 14,
+        "accuracy": 0.9285714285714286
       },
       "weights_ok": {
-        "n": 13,
-        "accuracy": 1.0
+        "n": 14,
+        "accuracy": 0.9285714285714286
       }
     }
   },
@@ -129,6 +128,90 @@
         "AAPL",
         "AMD",
         "PFE"
+      ]
+    },
+    {
+      "query_id": "95",
+      "outcome": "failed",
+      "phrasing": "unweighted",
+      "count_ok": true,
+      "lookback_value_ok": true,
+      "lookback_stated_ok": true,
+      "ticker_set_ok": false,
+      "weights_ok": false,
+      "weight_max_abs_error": 0.2,
+      "weight_l1_error": 0.4,
+      "weights_expected": {
+        "MA": 0.2,
+        "JNJ": 0.2,
+        "AMZN": 0.2,
+        "KO": 0.2,
+        "PFE": 0.2
+      },
+      "weights_got": {
+        "MCD": 0.2,
+        "JNJ": 0.2,
+        "AMZN": 0.2,
+        "KO": 0.2,
+        "PFE": 0.2
+      },
+      "n_holdings_expected": 5,
+      "n_holdings_got": 5,
+      "tickers_expected": [
+        "AMZN",
+        "JNJ",
+        "KO",
+        "MA",
+        "PFE"
+      ],
+      "tickers_got": [
+        "AMZN",
+        "JNJ",
+        "KO",
+        "MCD",
+        "PFE"
+      ]
+    },
+    {
+      "query_id": "97",
+      "outcome": "failed",
+      "phrasing": "percent",
+      "count_ok": true,
+      "lookback_value_ok": true,
+      "lookback_stated_ok": true,
+      "ticker_set_ok": false,
+      "weights_ok": false,
+      "weight_max_abs_error": 0.14,
+      "weight_l1_error": 0.28,
+      "weights_expected": {
+        "MA": 0.13,
+        "JPM": 0.28,
+        "CRM": 0.14,
+        "DIS": 0.31,
+        "V": 0.14
+      },
+      "weights_got": {
+        "DIS": 0.31,
+        "JPM": 0.28,
+        "MA": 0.13,
+        "SFM": 0.14,
+        "V": 0.14
+      },
+      "n_holdings_expected": 5,
+      "n_holdings_got": 5,
+      "tickers_expected": [
+        "CRM",
+        "DIS",
+        "JPM",
+        "MA",
+        "V"
+      ],
+      "tickers_got": [
+        "DIS",
+        "JPM",
+        "MA",
+        "SFM",
+        "V"
       ]
     }
   ]

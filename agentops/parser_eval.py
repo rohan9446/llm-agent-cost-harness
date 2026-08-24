@@ -247,6 +247,25 @@ def score(results: list[dict], vocab: dict[str, Any],
         scored_input.append(dict(f, _outcome="failed"))
         n_failed_scored += 1
 
+    # A row with no query text cannot be scored, and MUST NOT be silently
+    # dropped into the None bucket.
+    #
+    # This is the original sin of this module, returning by a route nobody
+    # watched. Parser accuracy used to be computed over successful queries
+    # only, which made the metric most flattering exactly where the parser was
+    # worst; that was fixed by scoring failure rows too. Then
+    # redact_artifacts.py removed the query text from failures.jsonl -- for
+    # good reasons -- and re-scoring afterwards fed empty strings to
+    # expected_parse, which returned None, which excluded those rows from the
+    # DENOMINATOR. The 28 excluded rows were precisely the parser's
+    # hallucinations, and B0's derived ticker accuracy rose from 95.3% to 98.0%
+    # with no measurement having changed.
+    #
+    # Exclusion that correlates with the thing being measured is not a rounding
+    # detail, it is the measurement lying. Counted and reported here so it can
+    # never happen quietly again.
+    n_no_text = sum(1 for r in scored_input if not (r.get("query") or "").strip())
+
     for r in scored_input:
         parsed = r.get("parsed") or {}
         label = r.get("label") or {}
@@ -315,6 +334,14 @@ def score(results: list[dict], vocab: dict[str, Any],
                         "two parser_eval.json files can be compared only when "
                         "they were produced by the same ruler"),
         "n_scored": len(rows),
+        "n_rows_without_query_text": n_no_text,
+        "_no_text_note": (
+            "rows whose query text was unavailable when this score was "
+            "computed -- e.g. re-scoring a REDACTED failures.jsonl. They "
+            "cannot be scored, and because they are disproportionately the "
+            "parser's own errors, excluding them INFLATES accuracy. Any value "
+            "above zero makes the derived rates below unusable; gated in "
+            "validity.check_run as parser_scored_every_attempt."),
         "n_failed_scored": n_failed_scored,
         "_failed_note": (
             "parser accuracy is computed over attempted queries, not "

@@ -115,9 +115,14 @@
       "detail": "parser_eval covers 1000 of 1000 attempted queries (need >= 1000 successful) -- the accuracy is reported, not gated; its ABSENCE is what is gated here"
     },
     {
+      "name": "parser_scored_every_attempt",
+      "ok": true,
+      "detail": "0 scored row(s) had no query text -- rescoring a redacted failures.jsonl silently excludes the parser's own errors and inflates the rate. Rehydrate from data/queries.json by query_id (scripts/rescore_parser.py does this) rather than accepting the higher number"
+    },
+    {
       "name": "parser_scorer_pinned",
       "ok": true,
-      "detail": "vocab c038cd09c585 scorer f87b528fd757 -- derived accuracy is a property of the alias map and the scorer, and neither was recorded anywhere before"
+      "detail": "vocab c038cd09c585 scorer be6225013ad6 -- derived accuracy is a property of the alias map and the scorer, and neither was recorded anywhere before"
     },
     {
       "name": "advisor_no_truncation",
