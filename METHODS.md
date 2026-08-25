@@ -149,21 +149,49 @@ For every measured configuration:
    `threading.Barrier`, which forces every worker thread to exist and be busy
    simultaneously — without it one fast thread could serve them all while the
    rest stayed cold. Warm-up is **traced** under `warmup-*` ids and **excluded
-   by name** from every metric.
+   by name** from every metric. Its outcome is also **recorded and gated**: the
+   manifest carries `warmup_attempted`, `warmup_failed` and the count of workers
+   actually warmed, and a failed mandatory warm-up aborts the run. Failures used
+   to be printed and swallowed, and `llm.COUNTER.reset()` then erased them from
+   the counters — so a cold worker was invisible to every check while the
+   manifest still claimed the pool was warm, because the number it recorded was
+   how many warm-ups had been *submitted*.
 3. Measure.
-4. Repeat at least three times (`--repeat 1|2|3`).
-5. Report the median with a confidence interval, never a single run.
+4. Repeat at least three times (`--repeat N`).
+5. Report the **median**, with the observed spread, never a single run.
 
-> **This protocol is not what the headline table met, and saying otherwise
-> would be the easiest lie in the document.** The 1,000-query B0/A1/A2
-> comparisons have one to two repeats each; the concurrency sweep has two full
-> orders, and C=64 has four. Steps 4 and 5 describe how the numbers *should* be
-> reported, and the headline figures are therefore quoted as point estimates
-> rather than medians with intervals. Where a result was replicated, it says so
-> and gives both runs: the concurrency reduction reproduced within 2% in both
-> directions, which is the strongest replication claim this project can make.
-> Reporting a "median of three" over one run is not a rounding error in
-> presentation, it is a fabricated statistic.
+> **What the headline table actually meets.** Each of B0, A1 and A2-short has
+> three repeats at n=1,000, C=8, and every headline figure is the median of
+> those three. Observed spread (max−min over the median): **0.3% for B0, 0.6%
+> for A1, 0.3% for A2-short**.
+>
+> Spread is reported instead of a confidence interval on purpose. Three
+> observations from one session on one GPU do not support an interval — the
+> quantity such an interval would estimate is between-session and between-device
+> variance, and this design cannot see it. Quoting ±x% from n=3 within-session
+> would be a statistic about the wrong population, stated with more precision
+> than the design earns. The spread is what was observed; that is all it claims.
+>
+> An earlier version of this document admitted the table did not meet this
+> protocol, because it did not: the arms had one to two repeats each. That was
+> corrected by measuring, not by relaxing the protocol.
+
+**A median is only a median if the repeats are of one system.** Repeats made
+before and after a code change are one measurement of each of two systems, not
+two samples of one. Every run records `source_tree_sha256` over every `.py` and
+`.sh` in `agentops/`, `scripts/` and `workflow/`, and
+
+```
+python scripts/compare_runs.py results/<STAGE>-...-rep{4,5,6} --repeats
+```
+
+refuses a repeat set whose members differ on it. This was not hypothetical: an
+earlier B0 median landed on the one repeat whose source hash differed from its
+neighbours, because a patch went out between two batches. The change was to a
+constant in a reporting script and could not have affected a measurement —
+which is exactly the kind of difference that gets waved through until the habit
+of waving things through costs something. The three headline repeat sets were
+re-measured with the tree frozen, and all three now return `CLEAN REPEAT SET`.
 
 **Run order is interleaved, not sequential.** Configurations are cycled
 A,B,C,A,B,C rather than AAA,BBB,CCC, so thermal drift spreads across treatments
@@ -195,6 +223,11 @@ Three constraints on the fit, all of which the code enforces or annotates:
   coefficients and inflates them unequally. Fit on a C=1 calibration run and
   carry those coefficients across regimes; `--weights-from` exists for this,
   and a fit performed at C>1 is labelled as such in `report.json`.
+  `--weights-from` **fails closed**: a calibration directory with no usable
+  trace, or one whose model, snapshot, prefix-caching setting, GPU set,
+  concurrency or system fingerprint differs from the run being reported, is
+  refused rather than silently ignored. It previously fell back to fitting on
+  the current C=8 run while the command line still said `--weights-from`.
 - The fitted intercepts `alpha` and `beta` are included when dividing the
   total. Excluding them would charge per-request overhead to nobody, and would
   overstate the advisor's share — at B0 both stages make exactly one request
@@ -217,6 +250,24 @@ A run is not a result until it proves what it did. The checks are listed in
 `README.md` and implemented in `agentops/validity.py`. A run failing any of
 them is discarded rather than annotated.
 
+**Checks have three outcomes, not two.** PASS and FAIL are verdicts; **GAP**
+means the evidence for that check is not available where it is being evaluated.
+A GAP gates nothing and is never counted as a pass. The distinction exists
+because collapsing it produced a false artifact: `recheck_runs.py` cannot see
+`results.jsonl` (it carries supplied query text and is not published), so it was
+handed placeholder rows, iterated over zero price reads, found zero bad ones,
+and wrote *"prices_from_snapshot: all reads from snapshot"* into published
+files — while printing to the terminal that the check could not be re-verified.
+An empty set satisfies any universal claim.
+
+**Rules are versioned, and re-judging says so.** `scripts/recheck_runs.py`
+re-evaluates every archived run under the current rules and writes
+`validity.recheck.json` beside it, marking which checks postdate the run. "This
+run passed validity" therefore never silently upgrades to "this run passes
+today's validity". Checks whose provenance fields did not exist at measurement
+time report as GAP rather than being backfilled — backfilling would stamp
+today's hash onto yesterday's numbers.
+
 The check most worth understanding is `snapshot_is_real_data`. The smoke test
 builds a synthetic price fixture so the harness can be exercised without a GPU
 or a network — and that fixture satisfies every other check perfectly. Without
@@ -233,8 +284,12 @@ the trace can only tell you a run was wrong once the GPU time is spent.
 - **Live server identity and configuration.** `results/server.json` is written
   *before* vLLM starts and describes intent, not the process currently holding
   the port. So `/v1/models` is fetched from the running server, and
-  `/proc/<pid>/cmdline` is read back and checked for the model, the
-  prefix-cache flag, dtype, tensor-parallel size and port. The launcher
+  `/proc/<pid>/cmdline` is read back and compared to the recorded launch argv
+  **in full, flag by flag**. Named checks for model, prefix caching, dtype,
+  tensor-parallel size and port give readable errors; the exhaustive pass is
+  what makes the claim true. An earlier version checked only those five while
+  the comment claimed it checked every setting, so `--max-model-len`,
+  `--gpu-memory-utilization` and `--seed` could all drift unnoticed. The launcher
   captures its PID with `$$` before `exec`, which preserves it — logging goes
   through a process substitution rather than a pipe precisely so the exec is
   not turned into a pipeline and the PID stays correct. The LLM counter
@@ -264,6 +319,22 @@ Every run scores the parse and writes `parser_eval.json`: holding count,
 lookback value and stated-vs-unstated against the shipped labels; ticker set
 against the derived alias map, and **portfolio weights** against the same map --
 all clearly marked as derived.
+
+Two properties of that score are enforced rather than assumed. **It must
+exist**: `parser_quality_scored` fails a run with no `parser_eval.json` covering
+the workload — the accuracy itself is reported, not gated, because a real error
+rate is the finding, but its *absence* is exactly what would hide a
+deterministic parser that bought its saving by becoming wrong. And **the ruler
+is pinned**: `parser_eval.json` records the SHA-256 of the scorer module and of
+`data/vocab.json`, because the alias map decides what the derived labels expect
+and could otherwise be edited with every code hash in the manifest unchanged.
+
+Scoring runs over **attempted** queries, not successful ones, and rows whose
+query text is unavailable are counted and gated. Both rules exist because the
+same bias arrived twice by different routes: scoring only successes drops the
+parses bad enough to crash, and re-scoring a *redacted* `failures.jsonl` drops
+the same rows again because the text is gone. The second cost 2.7 points of
+apparent accuracy — 95.3% read as 98.0% — with no measurement having changed.
 
 Weights are scored because 620 of the 1,000 queries are percentage-weighted, and
 a parser that returns 10/90 for a 90/10 portfolio passes holding count, ticker
@@ -378,12 +449,22 @@ measurement, and untested code added now would risk the runs that matter.
   `TTFT ~ alpha + a*prompt` and `latency-TTFT ~ beta + b*(completion-1)` — keep
   the fixed per-request overhead out of the per-token slopes. They still divide
   a measured total; they are not a claim about GPU-seconds per token, and the
-  report labels them accordingly. Both R² values are printed; treat a low one
-  as a reason to distrust the split, never the total.
+  report labels them accordingly. The fit is now gated rather than merely
+  annotated: a token slope ≤ 0 is **fatal**, because the data contradicts the
+  model and clamping it to a small positive would publish "tokens are free";
+  weak R² and unidentifiable slopes are recorded and printed but not refused,
+  since decode timing at C=1 is genuinely noisy and a gate firing on honest
+  noise is one people learn to bypass. Raw pre-clamp coefficients travel with
+  the weights. A low R² is a reason to distrust the split, never the total.
 - **Cost per query has two denominators.** Failed queries consume GPU time, so
   dividing only by successes understates cost. Both `cost_per_query_usd` (over
-  successes) and `cost_per_attempted_query_usd` are reported. At the official
-  B0 setting they are equal, because 100/100 is required.
+  successes) and `cost_per_attempted_query_usd` are reported, and
+  `_headline_denominator` names which one the write-up quotes: **attempted**.
+  Only B0 has failures, so only B0 differs between the two — and per-successful
+  raises B0's cost, which *enlarges* every saving claimed. Per-attempted is the
+  headline precisely because it is the harder number to argue from, and because
+  the failure rate already has its own column; folding it into cost as well
+  counts it twice.
 - **Rental-equivalent rate.** Must be replaced with a citable, dated rate for
   the *actual* device before any number is reported. An A100 80GB has an easy
   public market rate, which makes this simpler than an RTX PRO 6000 would have
